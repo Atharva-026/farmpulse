@@ -1,7 +1,7 @@
-import CropRecommend from './pages/CropRecommend';
+import DiseaseDetect from './pages/DiseaseDetect';
 
 function App() {
-  return <CropRecommend />;
+  return <DiseaseDetect />;
 }
 
 export default App;
