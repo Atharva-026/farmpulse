@@ -1,7 +1,7 @@
-import DiseaseDetect from './pages/DiseaseDetect';
+import LoanGateway from './pages/LoanGateway';
 
 function App() {
-  return <DiseaseDetect />;
+  return <LoanGateway />;
 }
 
 export default App;
