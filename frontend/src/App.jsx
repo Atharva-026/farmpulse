@@ -1,7 +1,7 @@
-import LoanGateway from './pages/LoanGateway';
+import SmartSell from './pages/SmartSell';
 
 function App() {
-  return <LoanGateway />;
+  return <SmartSell />;
 }
 
 export default App;
