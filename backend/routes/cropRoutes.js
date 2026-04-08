@@ -9,20 +9,26 @@ router.post('/recommend', async (req, res) => {
 
     console.log('Step 1 - Received request:', req.body);
 
-    let temperature = 25;
-    let humidity = 60;
-    let rainfall = 50;
+    // If GPS auto-fill already sent weather, use it directly (no OpenWeatherMap key needed)
+    let temperature = req.body.temperature ? parseFloat(req.body.temperature) : 25;
+    let humidity    = req.body.humidity    ? parseFloat(req.body.humidity)    : 60;
+    let rainfall    = req.body.rainfall    ? parseFloat(req.body.rainfall)    : 50;
+    const hasGPSWeather = !!(req.body.temperature && req.body.humidity);
 
-    try {
-      const weatherRes = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
-      );
-      temperature = weatherRes.data.main.temp;
-      humidity = weatherRes.data.main.humidity;
-      rainfall = weatherRes.data.rain ? weatherRes.data.rain['1h'] || 50 : 50;
-      console.log('Step 2 - Weather fetched:', { temperature, humidity, rainfall });
-    } catch (weatherErr) {
-      console.log('Step 2 - Weather API failed, using defaults:', weatherErr.message);
+    if (!hasGPSWeather) {
+      try {
+        const weatherRes = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
+        );
+        temperature = weatherRes.data.main.temp;
+        humidity = weatherRes.data.main.humidity;
+        rainfall = weatherRes.data.rain ? weatherRes.data.rain['1h'] || 50 : 50;
+        console.log('Step 2 - Weather from OpenWeatherMap:', { temperature, humidity, rainfall });
+      } catch (weatherErr) {
+        console.log('Step 2 - Weather API failed, using defaults:', weatherErr.message);
+      }
+    } else {
+      console.log('Step 2 - Using GPS weather from frontend:', { temperature, humidity, rainfall });
     }
 
     console.log('Step 3 - Calling Flask...');

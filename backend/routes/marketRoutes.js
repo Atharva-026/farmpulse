@@ -173,6 +173,24 @@ router.get('/prices/:cropName', async (req, res) => {
       }
     }
 
+    // After fetching live data, check if any mandis are from farmer's state
+    const farmerState = req.query.state || '';
+    if (farmerState && isLive) {
+      const localMandis = mandiList.filter(m => 
+        m.state?.toLowerCase().includes(farmerState.toLowerCase())
+      );
+      if (localMandis.length === 0) {
+        // No local data in live feed — supplement with fallback for their state
+        const fallback = FALLBACK_DATA[cropName] || [];
+        const localFallback = fallback.filter(m => 
+          m.state?.toLowerCase().includes(farmerState.toLowerCase())
+        );
+        if (localFallback.length > 0) {
+          mandiList = [...localFallback.map(m => ({ ...m, isFallback: true })), ...mandiList];
+        }
+      }
+    }
+
     const recommendation = getSellRecommendation(mandiList);
     const avgPrice = Math.round(mandiList.reduce((sum, m) => sum + m.price, 0) / mandiList.length);
     const priceVariation = Math.max(...mandiList.map(m => m.price)) - Math.min(...mandiList.map(m => m.price));
@@ -181,7 +199,12 @@ router.get('/prices/:cropName', async (req, res) => {
       success: true,
       cropName,
       isLive,
-      mandis: mandiList.sort((a, b) => b.price - a.price),
+      mandis: mandiList.sort((a, b) => {
+        const aLocal = farmerState && a.state?.toLowerCase().includes(farmerState.toLowerCase()) ? 0 : 1;
+        const bLocal = farmerState && b.state?.toLowerCase().includes(farmerState.toLowerCase()) ? 0 : 1;
+        if (aLocal !== bLocal) return aLocal - bLocal;
+        return b.price - a.price;
+      }),
       bestMandi: recommendation.best,
       advice: recommendation.advice,
       bestTime: recommendation.bestTime,

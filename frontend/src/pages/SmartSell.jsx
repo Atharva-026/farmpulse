@@ -49,6 +49,7 @@ export default function SmartSell() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [farmerState] = useState(() => localStorage.getItem('farmerState') || '');
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -57,7 +58,10 @@ export default function SmartSell() {
     setLoading(true);
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/market/prices/${encodeURIComponent(cropName)}`);
+      const url = farmerState 
+        ? `http://localhost:5000/api/market/prices/${encodeURIComponent(cropName)}?state=${encodeURIComponent(farmerState)}`
+        : `http://localhost:5000/api/market/prices/${encodeURIComponent(cropName)}`;
+      const res = await axios.get(url);
       if (res.data.success) {
         setResult(res.data);
       } else {
@@ -140,32 +144,55 @@ export default function SmartSell() {
           </div>
 
           <div style={{ marginTop: '20px' }}>
-            {result.mandis.map((mandi, i) => (
-              <div key={i} style={{
-                ...mandiCard,
-                borderLeft: `4px solid ${trendColor(mandi.trend)}`
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <p style={{ margin: 0, fontWeight: '500', fontSize: '15px' }}>{mandi.mandi}</p>
-                    <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#666' }}>{mandi.state}</p>
-                    {mandi.minPrice != null && mandi.maxPrice != null && (
-                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#999' }}>
-                        Range: ₹{mandi.minPrice} – ₹{mandi.maxPrice}
-                      </p>
-                    )}
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#333' }}>
-                      ₹{mandi.price}
+            {result.mandis.map((mandi, i) => {
+              const isLocal = farmerState && mandi.state?.toLowerCase().includes(farmerState.toLowerCase());
+              const prevIsLocal = i > 0 && farmerState && result.mandis[i-1].state?.toLowerCase().includes(farmerState.toLowerCase());
+              
+              return (
+                <div key={i}>
+                  {i === 0 && isLocal && (
+                    <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: '600', margin: '0 0 12px' }}>
+                      📍 Nearby Mandis ({farmerState})
                     </p>
-                    <p style={{ margin: 0, fontSize: '13px', color: trendColor(mandi.trend) }}>
-                      {trendIcon(mandi.trend)} {mandi.trend}
+                  )}
+                  {!isLocal && (prevIsLocal || i === 0) && farmerState && (
+                    <p style={{ fontSize: '12px', color: '#888', fontWeight: '600', margin: '16px 0 12px' }}>
+                      🗺️ Other Mandis (outside your region)
                     </p>
+                  )}
+                  <div style={{
+                    ...mandiCard,
+                    borderLeft: `4px solid ${trendColor(mandi.trend)}`,
+                    opacity: mandi.isFallback ? 0.85 : 1
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <p style={{ margin: 0, fontWeight: '500', fontSize: '15px' }}>{mandi.mandi}</p>
+                        <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#666' }}>{mandi.state}</p>
+                        {mandi.minPrice != null && mandi.maxPrice != null && (
+                          <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#999' }}>
+                            Range: ₹{mandi.minPrice} – ₹{mandi.maxPrice}
+                          </p>
+                        )}
+                        {mandi.isFallback && (
+                          <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#999', fontStyle: 'italic' }}>
+                            • Reference price
+                          </p>
+                        )}
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#333' }}>
+                          ₹{mandi.price}
+                        </p>
+                        <p style={{ margin: 0, fontSize: '13px', color: trendColor(mandi.trend) }}>
+                          {trendIcon(mandi.trend)} {mandi.trend}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -13,6 +13,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.log(err));
 
 app.use('/api/farmer', require('./routes/farmerRoutes'));
+app.use('/api/location', require('./routes/locationRoutes'));
 app.use('/api/crop', require('./routes/cropRoutes'));
 app.use('/api/disease', require('./routes/diseaseRoutes'));
 app.use('/api/market', require('./routes/marketRoutes'));
