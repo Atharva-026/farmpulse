@@ -63,7 +63,23 @@ CROP_INFO = {
     'chickpea': {'yield': '8-12 quintals/acre', 'profit': '₹25,000-₹40,000'},
     'banana': {'yield': '200-300 kg/acre', 'profit': '₹50,000-₹80,000'},
     'mango': {'yield': '100-150 kg/tree', 'profit': '₹70,000-₹1,00,000'},
-    'cotton': {'yield': '8-12 quintals/acre', 'profit': '₹35,000-₹55,000'}
+    'cotton': {'yield': '8-12 quintals/acre', 'profit': '₹35,000-₹55,000'},
+    'muskmelon':   {'yield': '80-120 quintals/acre',   'profit': '₹40,000-₹65,000'},
+    'watermelon':  {'yield': '100-150 quintals/acre',  'profit': '₹45,000-₹70,000'},
+    'mungbean':    {'yield': '4-6 quintals/acre',      'profit': '₹18,000-₹28,000'},
+    'blackgram':   {'yield': '4-6 quintals/acre',      'profit': '₹20,000-₹30,000'},
+    'lentil':      {'yield': '5-8 quintals/acre',      'profit': '₹22,000-₹35,000'},
+    'pomegranate': {'yield': '80-100 kg/tree',         'profit': '₹60,000-₹90,000'},
+    'grapes':      {'yield': '8-12 tonnes/acre',       'profit': '₹80,000-₹1,20,000'},
+    'orange':      {'yield': '60-80 kg/tree',          'profit': '₹50,000-₹75,000'},
+    'apple':       {'yield': '40-60 kg/tree',          'profit': '₹60,000-₹90,000'},
+    'papaya':      {'yield': '40-60 tonnes/acre',      'profit': '₹55,000-₹80,000'},
+    'coconut':     {'yield': '60-80 nuts/tree/yr',     'profit': '₹45,000-₹70,000'},
+    'jute':        {'yield': '20-25 quintals/acre',    'profit': '₹25,000-₹38,000'},
+    'coffee':      {'yield': '5-8 quintals/acre',      'profit': '₹60,000-₹90,000'},
+    'kidneybeans': {'yield': '6-9 quintals/acre',      'profit': '₹22,000-₹35,000'},
+    'pigeonpeas':  {'yield': '6-10 quintals/acre',     'profit': '₹20,000-₹32,000'},
+    'mothbeans':   {'yield': '3-5 quintals/acre',      'profit': '₹15,000-₹25,000'},
 }
 
 SOIL_TO_NPK = {
@@ -134,6 +150,22 @@ DISEASE_TREATMENTS = {
     'Rice___healthy': {
         'treatment': 'Crop is healthy.',
         'cost': 0
+    },
+    'Mango___Anthracnose': {
+        'treatment': 'Spray Copper Oxychloride 3g/L.',
+        'cost': 1200
+    },
+    'Mango___Bacterial_Canker': {
+        'treatment': 'Prune infected twigs and apply Bordeaux paste.',
+        'cost': 900
+    },
+    'Apple___Apple_scab': {
+        'treatment': 'Apply Captan or Mancozeb fungicides.',
+        'cost': 2100
+    },
+    'Corn_(maize)___Common_rust': {
+        'treatment': 'Use resistant hybrids or apply Tilt fungicide.',
+        'cost': 1600
     }
 }
 
@@ -201,6 +233,25 @@ def detect_disease():
         else:
             return jsonify({'error': 'No results from model', 'raw': results}), 500
 
+        # Confidence threshold and crop name matching check
+        label_normalized = disease_label.lower().replace('_', ' ')
+        crop_name_lower = crop_name.lower()
+        
+        is_mismatch = crop_name_lower not in label_normalized and crop_name_lower != 'unknown'
+        is_low_confidence = confidence < 40
+        
+        # If confidence is too low or crop doesn't match, provide a warning
+        if is_low_confidence or is_mismatch:
+            return jsonify({
+                'diseaseName': f"Uncertain (Detected {disease_label})",
+                'confidence': confidence,
+                'treatment': f"The model is unsure. It detected characteristics of {disease_label}, but this doesn't match your selection of {crop_name}. Please provide a clearer photo.",
+                'estimatedCost': 0,
+                'isHealthy': False,
+                'isWarning': True,
+                'cropName': crop_name
+            })
+
         treatment_info = DISEASE_TREATMENTS.get(disease_label, {
             'treatment': 'Consult local agronomist for detailed advice.',
             'cost': 1000
@@ -214,6 +265,7 @@ def detect_disease():
             'treatment': treatment_info['treatment'],
             'estimatedCost': treatment_info['cost'],
             'isHealthy': is_healthy,
+            'isWarning': False,
             'cropName': crop_name
         })
 

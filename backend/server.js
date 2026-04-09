@@ -18,6 +18,11 @@ app.use('/api/crop', require('./routes/cropRoutes'));
 app.use('/api/disease', require('./routes/diseaseRoutes'));
 app.use('/api/market', require('./routes/marketRoutes'));
 app.use('/api/loan', require('./routes/loanRoutes'));
+app.use('/api/vendor', require('./routes/vendorRoutes'));
+app.use('/api/bids', require('./routes/bidRoutes'));
+app.use('/api/vendor-listings', require('./routes/vendorPriceListingRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const MarketListing = require('../models/MarketListing');

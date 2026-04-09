@@ -3,243 +3,153 @@ const router = express.Router();
 const axios = require('axios');
 const MarketListing = require('../models/MarketListing');
 
-async function fetchLivePrices(cropName) {
+// Agmarknet API key from environment
+const AGMARKNET_API_KEY = process.env.AGMARKNET_API_KEY || '';
+
+// Fallback data for when API is down
+const FALLBACK_DATA = {
+  'rice': [
+    { mandi: 'Mumbai APMC', state: 'Maharashtra', price: 2800, trend: 'stable', isFallback: true },
+    { mandi: 'Delhi Azadpur', state: 'Delhi', price: 2900, trend: 'rising', isFallback: true },
+    { mandi: 'Kolkata Rice Market', state: 'West Bengal', price: 2700, trend: 'falling', isFallback: true }
+  ],
+  'wheat': [
+    { mandi: 'Indore Grain Market', state: 'Madhya Pradesh', price: 2200, trend: 'stable', isFallback: true },
+    { mandi: 'Ludhiana Mandi', state: 'Punjab', price: 2300, trend: 'rising', isFallback: true },
+    { mandi: 'Jaipur Grain Market', state: 'Rajasthan', price: 2100, trend: 'falling', isFallback: true }
+  ],
+  'maize': [
+    { mandi: 'Nagpur APMC', state: 'Maharashtra', price: 1800, trend: 'stable', isFallback: true },
+    { mandi: 'Pune Market', state: 'Maharashtra', price: 1850, trend: 'rising', isFallback: true },
+    { mandi: 'Ahmedabad Market', state: 'Gujarat', price: 1750, trend: 'falling', isFallback: true }
+  ]
+};
+
+// Calculate trend based on modal vs min/max prices
+function calculateTrend(modal, min, max) {
+  if (!modal || !min || !max) return 'stable';
+  const range = max - min;
+  if (range === 0) return 'stable';
+  const position = (modal - min) / range;
+  if (position >= 0.9) return 'rising';  // modal near max
+  if (position <= 0.1) return 'falling'; // modal near min
+  return 'stable';
+}
+
+// Fetch live prices from Agmarknet API
+async function fetchLivePrices(cropName, stateFilter = null) {
   try {
-    const response = await axios.get('https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070', {
-      params: {
-        'api-key': process.env.AGMARKNET_API_KEY,
-        format: 'json',
-        limit: 20,
-        filters: `commodity=${cropName}`
-      },
-      timeout: 8000
-    });
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const url = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${AGMARKNET_API_KEY}&format=json&limit=100&filters%5Bcommodity%5D=${encodeURIComponent(cropName)}&filters%5Bstate.keyword%5D=${encodeURIComponent(stateFilter || '')}`;
 
-    const records = response.data.records;
+    const response = await axios.get(url, { timeout: 10000 });
+    const records = response.data.records || [];
 
-    if (!records || records.length === 0) {
-      return null;
-    }
-
-    const mandis = records.map(record => {
-      const priceRange = Number(record.max_price) - Number(record.min_price);
-      const midPrice = Number(record.modal_price);
-      const maxPrice = Number(record.max_price);
-
-      let trend = 'stable';
-      if (midPrice >= maxPrice * 0.9) trend = 'rising';
-      else if (midPrice <= Number(record.min_price) * 1.1) trend = 'falling';
-
-      return {
-        mandi: record.market,
-        state: record.state,
-        district: record.district,
-        price: Number(record.modal_price),
-        minPrice: Number(record.min_price),
-        maxPrice: Number(record.max_price),
-        date: record.arrival_date,
-        trend
-      };
-    });
-
-    const sorted = mandis
-      .filter(m => m.price > 0)
-      .sort((a, b) => b.price - a.price)
-      .slice(0, 8);
-
+    // Deduplicate by mandi-state combination
     const seen = new Set();
-    const unique = sorted.filter(m => {
-      const key = `${m.mandi}-${m.state}`;
+    const uniqueRecords = records.filter(record => {
+      const key = `${record.market}-${record.state}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
-    return unique;
 
-  } catch (err) {
-    console.log('Agmarknet API failed:', err.message);
-    return null;
+    // Transform to our format
+    const mandis = uniqueRecords.map(record => ({
+      mandi: record.market,
+      state: record.state,
+      price: parseFloat(record.modal_price) || 0,
+      trend: calculateTrend(
+        parseFloat(record.modal_price),
+        parseFloat(record.min_price),
+        parseFloat(record.max_price)
+      ),
+      isFallback: false
+    })).filter(m => m.price > 0);
+
+    // If no live data for the state, supplement with fallback for that state
+    if (stateFilter && mandis.length === 0) {
+      const fallbackForCrop = FALLBACK_DATA[cropName.toLowerCase()] || [];
+      const stateFallbacks = fallbackForCrop.filter(m => m.state === stateFilter);
+      mandis.push(...stateFallbacks);
+    }
+
+    return mandis;
+  } catch (error) {
+    console.log('Agmarknet API error:', error.message);
+    // Return fallback data
+    return FALLBACK_DATA[cropName.toLowerCase()] || [];
   }
 }
 
-const FALLBACK_DATA = {
-  tomato: [
-    { mandi: 'Nashik', state: 'Maharashtra', price: 3100, minPrice: 2800, maxPrice: 3400, trend: 'rising' },
-    { mandi: 'Mumbai', state: 'Maharashtra', price: 3400, minPrice: 3000, maxPrice: 3800, trend: 'stable' },
-    { mandi: 'Bangalore', state: 'Karnataka', price: 3200, minPrice: 2900, maxPrice: 3500, trend: 'rising' },
-    { mandi: 'Pune', state: 'Maharashtra', price: 2800, minPrice: 2500, maxPrice: 3100, trend: 'stable' },
-    { mandi: 'Hubli', state: 'Karnataka', price: 2600, minPrice: 2300, maxPrice: 2900, trend: 'falling' },
-  ],
-  potato: [
-    { mandi: 'Delhi', state: 'Delhi', price: 1600, minPrice: 1400, maxPrice: 1800, trend: 'rising' },
-    { mandi: 'Kanpur', state: 'Uttar Pradesh', price: 1400, minPrice: 1200, maxPrice: 1600, trend: 'rising' },
-    { mandi: 'Agra', state: 'Uttar Pradesh', price: 1200, minPrice: 1000, maxPrice: 1400, trend: 'stable' },
-    { mandi: 'Kolkata', state: 'West Bengal', price: 1300, minPrice: 1100, maxPrice: 1500, trend: 'stable' },
-    { mandi: 'Patna', state: 'Bihar', price: 1100, minPrice: 900, maxPrice: 1300, trend: 'falling' },
-  ],
-  rice: [
-    { mandi: 'Chennai', state: 'Tamil Nadu', price: 2400, minPrice: 2200, maxPrice: 2600, trend: 'rising' },
-    { mandi: 'Hyderabad', state: 'Telangana', price: 2200, minPrice: 2000, maxPrice: 2400, trend: 'stable' },
-    { mandi: 'Vijayawada', state: 'Andhra Pradesh', price: 2100, minPrice: 1900, maxPrice: 2300, trend: 'stable' },
-    { mandi: 'Bhubaneswar', state: 'Odisha', price: 1900, minPrice: 1700, maxPrice: 2100, trend: 'falling' },
-    { mandi: 'Cuttack', state: 'Odisha', price: 2000, minPrice: 1800, maxPrice: 2200, trend: 'stable' },
-  ],
-  wheat: [
-    { mandi: 'Ludhiana', state: 'Punjab', price: 2300, minPrice: 2100, maxPrice: 2500, trend: 'rising' },
-    { mandi: 'Amritsar', state: 'Punjab', price: 2200, minPrice: 2000, maxPrice: 2400, trend: 'stable' },
-    { mandi: 'Indore', state: 'Madhya Pradesh', price: 2100, minPrice: 1900, maxPrice: 2300, trend: 'rising' },
-    { mandi: 'Bhopal', state: 'Madhya Pradesh', price: 2000, minPrice: 1800, maxPrice: 2200, trend: 'stable' },
-    { mandi: 'Jaipur', state: 'Rajasthan', price: 1900, minPrice: 1700, maxPrice: 2100, trend: 'falling' },
-  ],
-  maize: [
-    { mandi: 'Nizamabad', state: 'Telangana', price: 1900, minPrice: 1700, maxPrice: 2100, trend: 'rising' },
-    { mandi: 'Davangere', state: 'Karnataka', price: 1800, minPrice: 1600, maxPrice: 2000, trend: 'rising' },
-    { mandi: 'Shimoga', state: 'Karnataka', price: 1700, minPrice: 1500, maxPrice: 1900, trend: 'stable' },
-    { mandi: 'Akola', state: 'Maharashtra', price: 1750, minPrice: 1550, maxPrice: 1950, trend: 'stable' },
-    { mandi: 'Gulbarga', state: 'Karnataka', price: 1600, minPrice: 1400, maxPrice: 1800, trend: 'falling' },
-  ],
-  onion: [
-    { mandi: 'Lasalgaon', state: 'Maharashtra', price: 1500, minPrice: 1300, maxPrice: 1700, trend: 'rising' },
-    { mandi: 'Nashik', state: 'Maharashtra', price: 1400, minPrice: 1200, maxPrice: 1600, trend: 'rising' },
-    { mandi: 'Pune', state: 'Maharashtra', price: 1600, minPrice: 1400, maxPrice: 1800, trend: 'stable' },
-    { mandi: 'Bangalore', state: 'Karnataka', price: 1700, minPrice: 1500, maxPrice: 1900, trend: 'rising' },
-    { mandi: 'Indore', state: 'Madhya Pradesh', price: 1300, minPrice: 1100, maxPrice: 1500, trend: 'falling' },
-  ],
-  cotton: [
-    { mandi: 'Warangal', state: 'Telangana', price: 6700, minPrice: 6500, maxPrice: 6900, trend: 'rising' },
-    { mandi: 'Akola', state: 'Maharashtra', price: 6500, minPrice: 6300, maxPrice: 6700, trend: 'rising' },
-    { mandi: 'Guntur', state: 'Andhra Pradesh', price: 6600, minPrice: 6400, maxPrice: 6800, trend: 'rising' },
-    { mandi: 'Amravati', state: 'Maharashtra', price: 6300, minPrice: 6100, maxPrice: 6500, trend: 'stable' },
-    { mandi: 'Adilabad', state: 'Telangana', price: 6400, minPrice: 6200, maxPrice: 6600, trend: 'stable' },
-  ],
-  banana: [
-    { mandi: 'Jalgaon', state: 'Maharashtra', price: 1200, minPrice: 1000, maxPrice: 1400, trend: 'rising' },
-    { mandi: 'Anantapur', state: 'Andhra Pradesh', price: 1300, minPrice: 1100, maxPrice: 1500, trend: 'rising' },
-    { mandi: 'Trichy', state: 'Tamil Nadu', price: 1400, minPrice: 1200, maxPrice: 1600, trend: 'stable' },
-    { mandi: 'Coimbatore', state: 'Tamil Nadu', price: 1350, minPrice: 1150, maxPrice: 1550, trend: 'rising' },
-    { mandi: 'Solapur', state: 'Maharashtra', price: 1100, minPrice: 900, maxPrice: 1300, trend: 'stable' },
-  ]
-};
-
-function getSellRecommendation(mandiList) {
-  const sorted = [...mandiList].sort((a, b) => b.price - a.price);
-  const best = sorted[0];
-  const rising = mandiList.filter(m => m.trend === 'rising');
-  const falling = mandiList.filter(m => m.trend === 'falling');
-
-  let advice = '';
-  let bestTime = '';
-
-  if (best.trend === 'rising') {
-    advice = `Prices are rising at ${best.mandi}. Sell within the next 3-5 days for maximum profit.`;
-    bestTime = 'Next 3-5 days';
-  } else if (best.trend === 'stable') {
-    advice = `Prices are stable at ${best.mandi}. This is a good time to sell now.`;
-    bestTime = 'Now';
-  } else {
-    const risingMandi = rising.length > 0 ? rising[0] : sorted[1];
-    advice = `Prices are falling at top mandis. Consider selling at ${risingMandi.mandi} where prices are still rising.`;
-    bestTime = 'As soon as possible';
-  }
-
-  return { best, advice, bestTime, rising, falling };
-}
-
+/**
+ * GET /api/market/prices/:cropName?state=StateName
+ * Returns: { mandis: [{ mandi, state, price, trend, isFallback }], success: true }
+ */
 router.get('/prices/:cropName', async (req, res) => {
   try {
-    const cropName = req.params.cropName.toLowerCase();
-    console.log('Market Step 1 - Fetching prices for:', cropName);
+    const { cropName } = req.params;
+    const { state } = req.query;
 
-    let mandiList = null;
-    let isLive = false;
+    const mandis = await fetchLivePrices(cropName, state);
 
-    if (process.env.AGMARKNET_API_KEY) {
-      console.log('Market Step 2 - Trying live Agmarknet API...');
-      mandiList = await fetchLivePrices(cropName);
-      if (mandiList && mandiList.length > 0) {
-        isLive = true;
-        console.log('Market Step 3 - Live data fetched:', mandiList.length, 'mandis');
-      }
-    }
-
-    if (!mandiList || mandiList.length === 0) {
-      console.log('Market Step 2 - Using fallback data');
-      mandiList = FALLBACK_DATA[cropName];
-      if (!mandiList) {
-        return res.json({
-          success: false,
-          message: `No data for ${cropName}. Available: ${Object.keys(FALLBACK_DATA).join(', ')}`
-        });
-      }
-    }
-
-    // After fetching live data, check if any mandis are from farmer's state
-    const farmerState = req.query.state || '';
-    if (farmerState && isLive) {
-      const localMandis = mandiList.filter(m => 
-        m.state?.toLowerCase().includes(farmerState.toLowerCase())
-      );
-      if (localMandis.length === 0) {
-        // No local data in live feed — supplement with fallback for their state
-        const fallback = FALLBACK_DATA[cropName] || [];
-        const localFallback = fallback.filter(m => 
-          m.state?.toLowerCase().includes(farmerState.toLowerCase())
-        );
-        if (localFallback.length > 0) {
-          mandiList = [...localFallback.map(m => ({ ...m, isFallback: true })), ...mandiList];
-        }
-      }
-    }
-
-    const recommendation = getSellRecommendation(mandiList);
-    const avgPrice = Math.round(mandiList.reduce((sum, m) => sum + m.price, 0) / mandiList.length);
-    const priceVariation = Math.max(...mandiList.map(m => m.price)) - Math.min(...mandiList.map(m => m.price));
+    // Sort: local state first (priority 0), then others (priority 1), then by price descending
+    mandis.sort((a, b) => {
+      const aLocal = state && a.state?.toLowerCase().includes(state.toLowerCase()) ? 0 : 1;
+      const bLocal = state && b.state?.toLowerCase().includes(state.toLowerCase()) ? 0 : 1;
+      if (aLocal !== bLocal) return aLocal - bLocal;
+      return b.price - a.price;
+    });
 
     res.json({
       success: true,
-      cropName,
-      isLive,
-      mandis: mandiList.sort((a, b) => {
-        const aLocal = farmerState && a.state?.toLowerCase().includes(farmerState.toLowerCase()) ? 0 : 1;
-        const bLocal = farmerState && b.state?.toLowerCase().includes(farmerState.toLowerCase()) ? 0 : 1;
-        if (aLocal !== bLocal) return aLocal - bLocal;
-        return b.price - a.price;
-      }),
-      bestMandi: recommendation.best,
-      advice: recommendation.advice,
-      bestTime: recommendation.bestTime,
-      avgPrice,
-      priceVariation,
-      risingCount: recommendation.rising.length,
-      fallingCount: recommendation.falling.length
+      mandis,
+      source: mandis.some(m => !m.isFallback) ? 'live' : 'fallback'
     });
-
-  } catch (err) {
-    console.error('Market ERROR:', err.message);
-    res.status(500).json({ success: false, error: err.message });
+  } catch (error) {
+    console.error('Market prices error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch market prices' });
   }
 });
 
+/**
+ * POST /api/market/list
+ * Body: { cropName, quantity, askingPrice, quality, location, state, district, farmerPhone, description, farmerId }
+ * Creates a new market listing for vendors to bid on
+ */
 router.post('/list', async (req, res) => {
   try {
-    const { farmerId, cropName, quantity, askingPrice, location } = req.body;
-    const listing = await MarketListing.create({
-      farmerId, cropName, quantity, askingPrice, location
-    });
-    res.json({ success: true, listing });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
+    const { cropName, quantity, askingPrice, quality, location, state, district, farmerPhone, description, farmerId } = req.body;
 
-router.get('/listings', async (req, res) => {
-  try {
-    const listings = await MarketListing.find({ status: 'active' })
-      .populate('farmerId', 'name location')
-      .sort({ createdAt: -1 });
-    res.json({ success: true, listings });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    // Validate required fields
+    if (!cropName || !quantity || !askingPrice || !farmerPhone) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+
+    // Create listing in database
+    const listing = new MarketListing({
+      farmerId,
+      cropName,
+      quantity: Number(quantity),
+      askingPrice: Number(askingPrice),
+      quality,
+      location,
+      state,
+      district,
+      farmerPhone,
+      description
+    });
+
+    await listing.save();
+
+    res.json({
+      success: true,
+      message: 'Listing created successfully',
+      listingId: listing._id
+    });
+  } catch (error) {
+    console.error('Create listing error:', error);
+    res.status(500).json({ success: false, error: 'Failed to create listing' });
   }
 });
 

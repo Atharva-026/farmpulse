@@ -1,0 +1,226 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "crop": "Crop Advisor",
+    "disease": "Disease Detection",
+    "loan": "Loan Gateway",
+    "sell": "Smart Sell"
+  },
+  "dashboard": {
+    "welcome": "Welcome to FarmPulse",
+    "tagline": "Your AI-powered companion from planting to profit. Follow the 4 stages below to get started.",
+    "startBtn": "Start with Crop Recommendation",
+    "journey": "Your Farming Journey",
+    "builtFor": "Built for Indian Farmers",
+    "builtForDesc": "Powered by real government APIs — Agmarknet, OpenWeatherMap, PlantVillage dataset and PM-KISAN schemes. No fake data. No guesswork.",
+    "stats": {
+      "cropAccuracy": "Crop model accuracy",
+      "diseaseAccuracy": "Disease detection accuracy",
+      "loanSchemes": "Real govt loan schemes",
+      "liveData": "Mandi price data"
+    },
+    "stages": {
+      "crop": {
+        "title": "Crop Recommendation",
+        "desc": "Tell us your soil, location, season and budget. Our AI recommends the best crop to grow.",
+        "tags": ["AI Powered", "Weather Data", "Soil Analysis"]
+      },
+      "disease": {
+        "title": "Disease Detection",
+        "desc": "Upload a photo of your crop. Our model detects any disease within seconds with 97% accuracy.",
+        "tags": ["Computer Vision", "97% Accuracy", "Instant Results"]
+      },
+      "loan": {
+        "title": "Loan Gateway",
+        "desc": "Get matched to the best government loan scheme. Pre-filled application, zero paperwork.",
+        "tags": ["PM-KISAN", "KCC", "PMFBY"]
+      },
+      "sell": {
+        "title": "Smart Selling",
+        "desc": "See live mandi prices across India. Know exactly when and where to sell for maximum profit.",
+        "tags": ["Live Prices", "Agmarknet API", "AI Prediction"]
+      }
+    }
+  },
+  "crop": {
+    "title": "Crop Recommendation",
+    "subtitle": "Use your GPS to auto-detect soil, water & weather — or fill in manually.",
+    "detectTitle": "Auto-detect my location",
+    "detectSubtitle": "Detects soil type, water availability, temperature & humidity",
+    "detectBtn": "Detect Location",
+    "detectingBtn": "Detecting...",
+    "redetectBtn": "Re-detect",
+    "detectingMsg": "Getting GPS → fetching soil data from SoilGrids → fetching weather from Open-Meteo...",
+    "autofillSuccess": "All fields below have been auto-filled. You can still change them if needed.",
+    "wrongLocation": "Wrong location? Type your city...",
+    "correctBtn": "Correct",
+    "locationLabel": "Location",
+    "tempLabel": "Temperature",
+    "humidityLabel": "Humidity",
+    "rainfallLabel": "Rainfall (7d)",
+    "soilLabel": "Soil Type",
+    "waterLabel": "Water Avail.",
+    "soilField": "Soil Type",
+    "seasonField": "Season",
+    "waterField": "Water Availability",
+    "budgetField": "Budget (₹)",
+    "locationField": "Location (City or Village)",
+    "locationPlaceholder": "e.g. Pune  (auto-filled by GPS above)",
+    "autoWeatherNote": "Temperature ({{temp}}°C), humidity ({{humidity}}%) and rainfall will be sent automatically — no OpenWeatherMap key needed.",
+    "submitBtn": "Get Crop Recommendation",
+    "submittingBtn": "Analysing...",
+    "seasons": {
+      "kharif": "Kharif (June–Oct)",
+      "rabi": "Rabi (Nov–Apr)",
+      "zaid": "Zaid (Apr–Jun)"
+    },
+    "water": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "soil": {
+      "sandy": "Sandy",
+      "clay": "Clay",
+      "loamy": "Loamy",
+      "silt": "Silt",
+      "peaty": "Peaty"
+    },
+    "result": {
+      "heading": "Recommended Crop",
+      "confidence": "{{value}}% confidence",
+      "yield": "Expected Yield",
+      "profit": "Expected Profit",
+      "temp": "Temperature",
+      "humidity": "Humidity",
+      "rainfall": "Rainfall"
+    },
+    "errors": {
+      "general": "Something went wrong. Check your API keys and Flask service.",
+      "locationDenied": "Location access denied. Please allow location access and try again, or fill in manually.",
+      "locationFail": "Could not get your location. Please fill in manually.",
+      "autoFillFail": "Could not fetch soil and weather data. You can still fill manually.",
+      "cityNotFound": "City \"{{city}}\" not found. Try a different spelling.",
+      "correctFail": "Could not correct location. Try again."
+    }
+  },
+  "disease": {
+    "title": "Disease Detection",
+    "subtitle": "Upload a clear photo of a crop leaf for instant disease diagnosis.",
+    "modelCoverage": "AI Model Coverage",
+    "modelCoverageDesc": "This model detects diseases in {{count}} crop types from the PlantVillage dataset.",
+    "seeSupported": "See what's supported ▼",
+    "hideSupported": "Hide details ▲",
+    "supportedTitle": "Supported crops:",
+    "unsupportedTitle": "Not supported (model not trained on these):",
+    "unsupportedWarning": "Uploading a mango or wheat leaf will give inaccurate results — the model will guess the closest trained class.",
+    "selectCrop": "Select Crop",
+    "uploadLabel": "Upload Leaf Photo",
+    "uploadHint": "Click to upload leaf photo",
+    "uploadSubhint": "JPG, PNG — clear close-up of the leaf works best",
+    "showing": "Showing: {{crop}} leaf",
+    "remove": "Remove ✕",
+    "detectBtn": "Detect Disease",
+    "detectingBtn": "Analysing leaf...",
+    "healthyStatus": "Status",
+    "diseaseStatus": "Disease Detected",
+    "cropLabel": "Crop",
+    "confidenceLabel": "Confidence",
+    "treatmentTitle": "Recommended Treatment",
+    "costLabel": "Estimated Treatment Cost",
+    "loanBtn": "Apply for Loan to Cover Treatment → ₹{{cost}}",
+    "loanHint": "Takes you to Loan Gateway with cost pre-filled",
+    "mismatchWarning": "Crop mismatch: You selected {{selected}} but the model detected characteristics of {{detected}}. Try a clearer close-up photo of the leaf.",
+    "healthyOnlyWarning": "{{crop}} — the PlantVillage dataset only contains healthy {{crop}} images. The model cannot reliably detect {{crop}} diseases. Tomato, Potato, Corn, and Apple have the best coverage.",
+    "errors": {
+      "noImage": "Please select an image of the crop leaf.",
+      "detectFail": "Detection failed. Make sure the Flask ML service is running on port 5001."
+    }
+  },
+  "sell": {
+    "title": "Smart Sell",
+    "subtitle": "Compare mandi prices and discover the best selling opportunity for your crop.",
+    "cropLabel": "Crop Name",
+    "cropPlaceholder": "e.g. tomato, wheat, potato",
+    "fetchBtn": "Get live mandi prices",
+    "fetchingBtn": "Loading prices...",
+    "liveTag": "Live Agmarknet Data",
+    "referenceTag": "Reference Data — Add Agmarknet API key for live prices",
+    "summary": "Market summary for {{crop}}",
+    "avgPrice": "Average price: ₹{{price}}",
+    "priceVariation": "Price variation: ₹{{variation}}",
+    "rising": "Rising mandis: {{count}}",
+    "falling": "Falling mandis: {{count}}",
+    "nearbyTitle": "Nearby Mandis ({{state}})",
+    "otherTitle": "Other Mandis (outside your region)",
+    "range": "Range: ₹{{min}} – ₹{{max}}",
+    "referencePrice": "Reference price",
+    "trends": {
+      "rising": "rising",
+      "falling": "falling",
+      "stable": "stable"
+    },
+    "errors": {
+      "noData": "No price data found for this crop.",
+      "fetchFail": "Failed to fetch market prices."
+    }
+  },
+  "loan": {
+    "title": "Loan Gateway",
+    "subtitle": "Find the best government loan scheme for your situation",
+    "fromDisease": "Coming from Disease Detection",
+    "fromDiseaseDesc": "Crop: {{crop}} · Disease: {{disease}}",
+    "fromDiseaseCost": "Estimated treatment cost of ₹{{cost}} has been pre-filled below.",
+    "costLabel": "Estimated Treatment Cost (₹)",
+    "landLabel": "Your Land Size (acres)",
+    "findBtn": "Find Matching Loan Schemes",
+    "findingBtn": "Finding schemes...",
+    "bestMatch": "Best Match for you",
+    "allSchemes": "All Matching Schemes ({{count}})",
+    "upTo": "Up to ₹{{amount}}",
+    "interest": "{{rate}}% interest",
+    "processing": "{{time}}",
+    "eligibility": "Eligibility",
+    "documents": "Documents needed",
+    "fillForm": "Fill Pre-filled Application",
+    "applicationTitle": "Application Form",
+    "personalDetails": "Personal Details",
+    "landCropDetails": "Land & Crop Details",
+    "bankDetails": "Bank Details",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "As per Aadhaar card",
+    "aadhaar": "Aadhaar Number",
+    "aadhaarPlaceholder": "12-digit Aadhaar number",
+    "phone": "Phone Number",
+    "phonePlaceholder": "10-digit mobile number",
+    "address": "Full Address",
+    "addressPlaceholder": "Village, Taluka",
+    "state": "State",
+    "statePlaceholder": "e.g. Maharashtra",
+    "district": "District",
+    "districtPlaceholder": "e.g. Pune",
+    "landSize": "Land Size (acres)",
+    "cropName": "Crop Name",
+    "cropPlaceholder": "e.g. Tomato",
+    "treatmentCost": "Estimated Treatment Cost (₹)",
+    "bankAccount": "Bank Account Number",
+    "bankAccountPlaceholder": "Account number",
+    "bankName": "Bank Name",
+    "bankNamePlaceholder": "e.g. State Bank of India",
+    "ifsc": "IFSC Code",
+    "ifscPlaceholder": "e.g. SBIN0001234",
+    "requiredDocs": "Required documents to attach",
+    "printBtn": "Print / Save as PDF",
+    "applyBtn": "Apply on Official Portal",
+    "errors": {
+      "fetchFail": "Failed to fetch loan schemes."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong.",
+    "na": "Not available",
+    "live": "Live",
+    "repayment": "Repayment"
+  }
+}

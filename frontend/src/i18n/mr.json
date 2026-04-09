@@ -1,0 +1,226 @@
+{
+  "nav": {
+    "dashboard": "मुख्यपृष्ठ",
+    "crop": "पीक सल्लागार",
+    "disease": "रोग ओळख",
+    "loan": "कर्ज गेटवे",
+    "sell": "स्मार्ट विक्री"
+  },
+  "dashboard": {
+    "welcome": "FarmPulse मध्ये आपले स्वागत आहे",
+    "tagline": "पेरणीपासून नफ्यापर्यंत तुमचा AI सहकारी. सुरू करण्यासाठी खालील 4 टप्पे पाळा.",
+    "startBtn": "पीक शिफारसीने सुरुवात करा",
+    "journey": "तुमचा शेती प्रवास",
+    "builtFor": "भारतीय शेतकऱ्यांसाठी बनवले",
+    "builtForDesc": "खऱ्या सरकारी APIs वापरून — Agmarknet, OpenWeatherMap, PlantVillage आणि PM-KISAN योजना. खोटा डेटा नाही.",
+    "stats": {
+      "cropAccuracy": "पीक मॉडेल अचूकता",
+      "diseaseAccuracy": "रोग ओळख अचूकता",
+      "loanSchemes": "खऱ्या सरकारी कर्ज योजना",
+      "liveData": "बाजारभाव डेटा"
+    },
+    "stages": {
+      "crop": {
+        "title": "पीक शिफारस",
+        "desc": "तुमची माती, ठिकाण, हंगाम आणि बजेट सांगा. आमचे AI सर्वोत्तम पीक सुचवेल.",
+        "tags": ["AI आधारित", "हवामान डेटा", "माती विश्लेषण"]
+      },
+      "disease": {
+        "title": "रोग ओळख",
+        "desc": "पिकाचा फोटो अपलोड करा. आमचे मॉडेल 97% अचूकतेने रोग ओळखते.",
+        "tags": ["कॉम्प्युटर व्हिजन", "97% अचूकता", "त्वरित निकाल"]
+      },
+      "loan": {
+        "title": "कर्ज गेटवे",
+        "desc": "सर्वोत्तम सरकारी कर्ज योजनेशी जुळवा. पूर्व-भरलेला अर्ज, शून्य कागदपत्रे.",
+        "tags": ["PM-KISAN", "KCC", "PMFBY"]
+      },
+      "sell": {
+        "title": "स्मार्ट विक्री",
+        "desc": "संपूर्ण भारतातील थेट बाजारभाव पाहा. जास्तीत जास्त नफ्यासाठी केव्हा आणि कुठे विकायचे ते जाणा.",
+        "tags": ["थेट भाव", "Agmarknet API", "AI अंदाज"]
+      }
+    }
+  },
+  "crop": {
+    "title": "पीक शिफारस",
+    "subtitle": "माती, पाणी आणि हवामान जाणण्यासाठी GPS वापरा — किंवा स्वतः भरा.",
+    "detectTitle": "माझे स्थान स्वतः ओळखा",
+    "detectSubtitle": "मातीचा प्रकार, पाण्याची उपलब्धता, तापमान आणि आर्द्रता ओळखते",
+    "detectBtn": "स्थान ओळखा",
+    "detectingBtn": "ओळखत आहे...",
+    "redetectBtn": "पुन्हा ओळखा",
+    "detectingMsg": "GPS मिळवत आहे → SoilGrids कडून माती डेटा → Open-Meteo कडून हवामान...",
+    "autofillSuccess": "खालील सर्व रकाने स्वतः भरले आहेत. आवश्यक असल्यास बदलू शकता.",
+    "wrongLocation": "चुकीचे ठिकाण? तुमचे शहर टाइप करा...",
+    "correctBtn": "दुरुस्त करा",
+    "locationLabel": "स्थान",
+    "tempLabel": "तापमान",
+    "humidityLabel": "आर्द्रता",
+    "rainfallLabel": "पाऊस (7 दिवस)",
+    "soilLabel": "मातीचा प्रकार",
+    "waterLabel": "पाण्याची उपलब्धता",
+    "soilField": "मातीचा प्रकार",
+    "seasonField": "हंगाम",
+    "waterField": "पाण्याची उपलब्धता",
+    "budgetField": "बजेट (₹)",
+    "locationField": "स्थान (शहर किंवा गाव)",
+    "locationPlaceholder": "उदा. पुणे (GPS द्वारे स्वतः भरले)",
+    "autoWeatherNote": "तापमान ({{temp}}°C), आर्द्रता ({{humidity}}%) आणि पाऊस आपोआप पाठवला जाईल.",
+    "submitBtn": "पीक शिफारस मिळवा",
+    "submittingBtn": "विश्लेषण होत आहे...",
+    "seasons": {
+      "kharif": "खरीप (जून–ऑक्टोबर)",
+      "rabi": "रब्बी (नोव्हेंबर–एप्रिल)",
+      "zaid": "जायद (एप्रिल–जून)"
+    },
+    "water": {
+      "high": "जास्त",
+      "medium": "मध्यम",
+      "low": "कमी"
+    },
+    "soil": {
+      "sandy": "वालुकामय",
+      "clay": "चिकणमाती",
+      "loamy": "गाळाची माती",
+      "silt": "गाळ",
+      "peaty": "पीट"
+    },
+    "result": {
+      "heading": "शिफारस केलेले पीक",
+      "confidence": "{{value}}% खात्री",
+      "yield": "अपेक्षित उत्पादन",
+      "profit": "अपेक्षित नफा",
+      "temp": "तापमान",
+      "humidity": "आर्द्रता",
+      "rainfall": "पाऊस"
+    },
+    "errors": {
+      "general": "काहीतरी चुकले. तुमची API keys आणि Flask सेवा तपासा.",
+      "locationDenied": "स्थान परवानगी नाकारली. परवानगी द्या किंवा स्वतः भरा.",
+      "locationFail": "तुमचे स्थान मिळाले नाही. कृपया स्वतः भरा.",
+      "autoFillFail": "माती आणि हवामान डेटा मिळाला नाही. स्वतः भरू शकता.",
+      "cityNotFound": "\"{{city}}\" शहर सापडले नाही. वेगळी वर्तनी वापरा.",
+      "correctFail": "स्थान दुरुस्त होऊ शकले नाही. पुन्हा प्रयत्न करा."
+    }
+  },
+  "disease": {
+    "title": "रोग ओळख",
+    "subtitle": "त्वरित रोग निदानासाठी पिकाच्या पानाचा स्पष्ट फोटो अपलोड करा.",
+    "modelCoverage": "AI मॉडेल कव्हरेज",
+    "modelCoverageDesc": "हे मॉडेल PlantVillage डेटासेटमधून {{count}} पीक प्रकारांमध्ये रोग ओळखते.",
+    "seeSupported": "काय समर्थित आहे पाहा ▼",
+    "hideSupported": "तपशील लपवा ▲",
+    "supportedTitle": "समर्थित पिके:",
+    "unsupportedTitle": "समर्थित नाही (मॉडेल प्रशिक्षित नाही):",
+    "unsupportedWarning": "आंबा किंवा गव्हाचे पान अपलोड केल्यास चुकीचे परिणाम येतील.",
+    "selectCrop": "पीक निवडा",
+    "uploadLabel": "पानाचा फोटो अपलोड करा",
+    "uploadHint": "फोटो अपलोड करण्यासाठी क्लिक करा",
+    "uploadSubhint": "JPG, PNG — पानाचा जवळचा स्पष्ट फोटो सर्वोत्तम",
+    "showing": "दाखवत आहे: {{crop}} चे पान",
+    "remove": "काढा ✕",
+    "detectBtn": "रोग ओळखा",
+    "detectingBtn": "विश्लेषण होत आहे...",
+    "healthyStatus": "स्थिती",
+    "diseaseStatus": "रोग आढळला",
+    "cropLabel": "पीक",
+    "confidenceLabel": "खात्री",
+    "treatmentTitle": "शिफारस केलेला उपचार",
+    "costLabel": "अंदाजे उपचार खर्च",
+    "loanBtn": "उपचारासाठी कर्जासाठी अर्ज करा → ₹{{cost}}",
+    "loanHint": "कर्ज गेटवेवर खर्च पूर्व-भरलेला असेल",
+    "mismatchWarning": "पीक जुळत नाही: तुम्ही {{selected}} निवडले पण मॉडेलने {{detected}} ओळखले. स्पष्ट फोटो वापरा.",
+    "healthyOnlyWarning": "{{crop}} — डेटासेटमध्ये फक्त निरोगी {{crop}} च्या प्रतिमा आहेत. टोमॅटो, बटाटा, मका सर्वोत्तम आहेत.",
+    "errors": {
+      "noImage": "कृपया पिकाच्या पानाचे चित्र निवडा.",
+      "detectFail": "ओळख अयशस्वी. Flask ML सेवा पोर्ट 5001 वर चालू आहे का ते तपासा."
+    }
+  },
+  "sell": {
+    "title": "स्मार्ट विक्री",
+    "subtitle": "बाजारभावांची तुलना करा आणि तुमच्या पिकासाठी सर्वोत्तम संधी शोधा.",
+    "cropLabel": "पिकाचे नाव",
+    "cropPlaceholder": "उदा. टोमॅटो, गहू, बटाटा",
+    "fetchBtn": "थेट बाजारभाव पाहा",
+    "fetchingBtn": "भाव लोड होत आहेत...",
+    "liveTag": "थेट Agmarknet डेटा",
+    "referenceTag": "संदर्भ डेटा — थेट भावांसाठी Agmarknet API key घाला",
+    "summary": "{{crop}} चा बाजार सारांश",
+    "avgPrice": "सरासरी भाव: ₹{{price}}",
+    "priceVariation": "भाव फरक: ₹{{variation}}",
+    "rising": "वाढणाऱ्या मंड्या: {{count}}",
+    "falling": "घसरणाऱ्या मंड्या: {{count}}",
+    "nearbyTitle": "जवळच्या मंड्या ({{state}})",
+    "otherTitle": "इतर मंड्या (तुमच्या क्षेत्राबाहेर)",
+    "range": "मर्यादा: ₹{{min}} – ₹{{max}}",
+    "referencePrice": "संदर्भ भाव",
+    "trends": {
+      "rising": "वाढत आहे",
+      "falling": "घसरत आहे",
+      "stable": "स्थिर"
+    },
+    "errors": {
+      "noData": "या पिकासाठी भाव डेटा मिळाला नाही.",
+      "fetchFail": "बाजारभाव आणण्यात अयशस्वी."
+    }
+  },
+  "loan": {
+    "title": "कर्ज गेटवे",
+    "subtitle": "तुमच्या परिस्थितीसाठी सर्वोत्तम सरकारी कर्ज योजना शोधा",
+    "fromDisease": "रोग ओळखीतून येत आहात",
+    "fromDiseaseDesc": "पीक: {{crop}} · रोग: {{disease}}",
+    "fromDiseaseCost": "₹{{cost}} अंदाजे उपचार खर्च खाली पूर्व-भरलेला आहे.",
+    "costLabel": "अंदाजे उपचार खर्च (₹)",
+    "landLabel": "तुमच्या जमिनीचा आकार (एकर)",
+    "findBtn": "जुळणाऱ्या कर्ज योजना शोधा",
+    "findingBtn": "योजना शोधत आहे...",
+    "bestMatch": "तुमच्यासाठी सर्वोत्तम पर्याय",
+    "allSchemes": "सर्व जुळणाऱ्या योजना ({{count}})",
+    "upTo": "₹{{amount}} पर्यंत",
+    "interest": "{{rate}}% व्याज",
+    "processing": "{{time}}",
+    "eligibility": "पात्रता",
+    "documents": "आवश्यक कागदपत्रे",
+    "fillForm": "पूर्व-भरलेला अर्ज भरा",
+    "applicationTitle": "अर्ज फॉर्म",
+    "personalDetails": "वैयक्तिक तपशील",
+    "landCropDetails": "जमीन आणि पीक तपशील",
+    "bankDetails": "बँक तपशील",
+    "fullName": "पूर्ण नाव",
+    "fullNamePlaceholder": "आधार कार्डनुसार",
+    "aadhaar": "आधार नंबर",
+    "aadhaarPlaceholder": "12 अंकी आधार नंबर",
+    "phone": "फोन नंबर",
+    "phonePlaceholder": "10 अंकी मोबाइल नंबर",
+    "address": "पूर्ण पत्ता",
+    "addressPlaceholder": "गाव, तालुका",
+    "state": "राज्य",
+    "statePlaceholder": "उदा. महाराष्ट्र",
+    "district": "जिल्हा",
+    "districtPlaceholder": "उदा. पुणे",
+    "landSize": "जमिनीचा आकार (एकर)",
+    "cropName": "पिकाचे नाव",
+    "cropPlaceholder": "उदा. टोमॅटो",
+    "treatmentCost": "अंदाजे उपचार खर्च (₹)",
+    "bankAccount": "बँक खाते नंबर",
+    "bankAccountPlaceholder": "खाते नंबर",
+    "bankName": "बँकेचे नाव",
+    "bankNamePlaceholder": "उदा. स्टेट बँक ऑफ इंडिया",
+    "ifsc": "IFSC कोड",
+    "ifscPlaceholder": "उदा. SBIN0001234",
+    "requiredDocs": "जोडावयाची आवश्यक कागदपत्रे",
+    "printBtn": "प्रिंट / PDF म्हणून सेव्ह करा",
+    "applyBtn": "अधिकृत पोर्टलवर अर्ज करा",
+    "errors": {
+      "fetchFail": "कर्ज योजना आणण्यात अयशस्वी."
+    }
+  },
+  "common": {
+    "loading": "लोड होत आहे...",
+    "error": "काहीतरी चुकले.",
+    "na": "उपलब्ध नाही",
+    "live": "थेट",
+    "repayment": "परतफेड"
+  }
+}

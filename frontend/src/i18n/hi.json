@@ -1,0 +1,226 @@
+{
+  "nav": {
+    "dashboard": "होम",
+    "crop": "फसल सलाहकार",
+    "disease": "रोग पहचान",
+    "loan": "लोन गेटवे",
+    "sell": "स्मार्ट बेचें"
+  },
+  "dashboard": {
+    "welcome": "FarmPulse में आपका स्वागत है",
+    "tagline": "बुवाई से मुनाफे तक आपका AI साथी। शुरू करने के लिए नीचे दिए 4 चरणों का पालन करें।",
+    "startBtn": "फसल सिफारिश से शुरू करें",
+    "journey": "आपकी खेती की यात्रा",
+    "builtFor": "भारतीय किसानों के लिए बनाया गया",
+    "builtForDesc": "असली सरकारी APIs से संचालित — Agmarknet, OpenWeatherMap, PlantVillage और PM-KISAN योजनाएं। कोई नकली डेटा नहीं।",
+    "stats": {
+      "cropAccuracy": "फसल मॉडल की सटीकता",
+      "diseaseAccuracy": "रोग पहचान की सटीकता",
+      "loanSchemes": "असली सरकारी लोन योजनाएं",
+      "liveData": "मंडी मूल्य डेटा"
+    },
+    "stages": {
+      "crop": {
+        "title": "फसल सिफारिश",
+        "desc": "अपनी मिट्टी, स्थान, मौसम और बजट बताएं। हमारा AI सबसे अच्छी फसल सुझाएगा।",
+        "tags": ["AI आधारित", "मौसम डेटा", "मिट्टी विश्लेषण"]
+      },
+      "disease": {
+        "title": "रोग पहचान",
+        "desc": "अपनी फसल की फोटो अपलोड करें। हमारा मॉडल 97% सटीकता से रोग पहचानता है।",
+        "tags": ["कंप्यूटर विजन", "97% सटीकता", "तुरंत परिणाम"]
+      },
+      "loan": {
+        "title": "लोन गेटवे",
+        "desc": "सबसे अच्छी सरकारी लोन योजना से मिलान करें। पहले से भरा आवेदन, शून्य कागजी काम।",
+        "tags": ["PM-KISAN", "KCC", "PMFBY"]
+      },
+      "sell": {
+        "title": "स्मार्ट बिक्री",
+        "desc": "पूरे भारत में लाइव मंडी भाव देखें। जानें कब और कहाँ बेचने पर सबसे अधिक मुनाफा होगा।",
+        "tags": ["लाइव भाव", "Agmarknet API", "AI भविष्यवाणी"]
+      }
+    }
+  },
+  "crop": {
+    "title": "फसल सिफारिश",
+    "subtitle": "मिट्टी, पानी और मौसम जानने के लिए GPS उपयोग करें — या खुद भरें।",
+    "detectTitle": "मेरा स्थान स्वतः पहचानें",
+    "detectSubtitle": "मिट्टी का प्रकार, पानी की उपलब्धता, तापमान और नमी पहचानता है",
+    "detectBtn": "स्थान पहचानें",
+    "detectingBtn": "पहचाना जा रहा है...",
+    "redetectBtn": "फिर से पहचानें",
+    "detectingMsg": "GPS प्राप्त हो रहा है → SoilGrids से मिट्टी डेटा → Open-Meteo से मौसम...",
+    "autofillSuccess": "नीचे के सभी खाने स्वतः भर गए हैं। जरूरत हो तो बदल सकते हैं।",
+    "wrongLocation": "गलत स्थान? अपना शहर टाइप करें...",
+    "correctBtn": "सही करें",
+    "locationLabel": "स्थान",
+    "tempLabel": "तापमान",
+    "humidityLabel": "नमी",
+    "rainfallLabel": "वर्षा (7 दिन)",
+    "soilLabel": "मिट्टी का प्रकार",
+    "waterLabel": "पानी की उपलब्धता",
+    "soilField": "मिट्टी का प्रकार",
+    "seasonField": "मौसम",
+    "waterField": "पानी की उपलब्धता",
+    "budgetField": "बजट (₹)",
+    "locationField": "स्थान (शहर या गाँव)",
+    "locationPlaceholder": "जैसे पुणे (GPS से स्वतः भरा)",
+    "autoWeatherNote": "तापमान ({{temp}}°C), नमी ({{humidity}}%) और वर्षा स्वतः भेजी जाएगी।",
+    "submitBtn": "फसल सिफारिश पाएं",
+    "submittingBtn": "विश्लेषण हो रहा है...",
+    "seasons": {
+      "kharif": "खरीफ (जून–अक्टूबर)",
+      "rabi": "रबी (नवंबर–अप्रैल)",
+      "zaid": "जायद (अप्रैल–जून)"
+    },
+    "water": {
+      "high": "अधिक",
+      "medium": "मध्यम",
+      "low": "कम"
+    },
+    "soil": {
+      "sandy": "बलुई",
+      "clay": "चिकनी मिट्टी",
+      "loamy": "दोमट",
+      "silt": "गाद",
+      "peaty": "पीटी"
+    },
+    "result": {
+      "heading": "अनुशंसित फसल",
+      "confidence": "{{value}}% विश्वास",
+      "yield": "अनुमानित उपज",
+      "profit": "अनुमानित मुनाफा",
+      "temp": "तापमान",
+      "humidity": "नमी",
+      "rainfall": "वर्षा"
+    },
+    "errors": {
+      "general": "कुछ गलत हुआ। अपनी API keys और Flask सेवा जाँचें।",
+      "locationDenied": "स्थान की अनुमति नहीं मिली। कृपया अनुमति दें या खुद भरें।",
+      "locationFail": "आपका स्थान नहीं मिला। कृपया खुद भरें।",
+      "autoFillFail": "मिट्टी और मौसम डेटा नहीं मिला। खुद भर सकते हैं।",
+      "cityNotFound": "\"{{city}}\" शहर नहीं मिला। अलग वर्तनी आजमाएं।",
+      "correctFail": "स्थान सही नहीं हो सका। फिर कोशिश करें।"
+    }
+  },
+  "disease": {
+    "title": "रोग पहचान",
+    "subtitle": "तुरंत रोग निदान के लिए फसल की पत्ती की साफ फोटो अपलोड करें।",
+    "modelCoverage": "AI मॉडल कवरेज",
+    "modelCoverageDesc": "यह मॉडल PlantVillage डेटासेट से {{count}} फसल प्रकारों में रोग पहचानता है।",
+    "seeSupported": "क्या समर्थित है देखें ▼",
+    "hideSupported": "विवरण छुपाएं ▲",
+    "supportedTitle": "समर्थित फसलें:",
+    "unsupportedTitle": "समर्थित नहीं (मॉडल इन पर प्रशिक्षित नहीं):",
+    "unsupportedWarning": "आम या गेहूं की पत्ती अपलोड करने पर गलत परिणाम आएंगे।",
+    "selectCrop": "फसल चुनें",
+    "uploadLabel": "पत्ती की फोटो अपलोड करें",
+    "uploadHint": "फोटो अपलोड करने के लिए क्लिक करें",
+    "uploadSubhint": "JPG, PNG — पत्ती की करीबी साफ फोटो सबसे अच्छी होती है",
+    "showing": "दिखाई जा रही है: {{crop}} की पत्ती",
+    "remove": "हटाएं ✕",
+    "detectBtn": "रोग पहचानें",
+    "detectingBtn": "विश्लेषण हो रहा है...",
+    "healthyStatus": "स्थिति",
+    "diseaseStatus": "रोग पाया गया",
+    "cropLabel": "फसल",
+    "confidenceLabel": "विश्वास",
+    "treatmentTitle": "अनुशंसित उपचार",
+    "costLabel": "अनुमानित उपचार लागत",
+    "loanBtn": "उपचार के लिए लोन हेतु आवेदन करें → ₹{{cost}}",
+    "loanHint": "लागत पहले से भरी होगी",
+    "mismatchWarning": "फसल मेल नहीं खाती: आपने {{selected}} चुना लेकिन मॉडल ने {{detected}} पहचाना। साफ फोटो आजमाएं।",
+    "healthyOnlyWarning": "{{crop}} — डेटासेट में केवल स्वस्थ {{crop}} की तस्वीरें हैं। टमाटर, आलू, मक्का सबसे अच्छे हैं।",
+    "errors": {
+      "noImage": "कृपया फसल की पत्ती की तस्वीर चुनें।",
+      "detectFail": "पहचान विफल। Flask ML सेवा पोर्ट 5001 पर चल रही है यह जाँचें।"
+    }
+  },
+  "sell": {
+    "title": "स्मार्ट बेचें",
+    "subtitle": "मंडी भाव की तुलना करें और अपनी फसल के लिए सबसे अच्छा मौका खोजें।",
+    "cropLabel": "फसल का नाम",
+    "cropPlaceholder": "जैसे टमाटर, गेहूं, आलू",
+    "fetchBtn": "लाइव मंडी भाव देखें",
+    "fetchingBtn": "भाव लोड हो रहे हैं...",
+    "liveTag": "लाइव Agmarknet डेटा",
+    "referenceTag": "संदर्भ डेटा — लाइव भाव के लिए Agmarknet API key डालें",
+    "summary": "{{crop}} का बाजार सारांश",
+    "avgPrice": "औसत भाव: ₹{{price}}",
+    "priceVariation": "भाव अंतर: ₹{{variation}}",
+    "rising": "बढ़ती मंडियाँ: {{count}}",
+    "falling": "घटती मंडियाँ: {{count}}",
+    "nearbyTitle": "पास की मंडियाँ ({{state}})",
+    "otherTitle": "अन्य मंडियाँ (आपके क्षेत्र के बाहर)",
+    "range": "सीमा: ₹{{min}} – ₹{{max}}",
+    "referencePrice": "संदर्भ भाव",
+    "trends": {
+      "rising": "बढ़ रहा",
+      "falling": "घट रहा",
+      "stable": "स्थिर"
+    },
+    "errors": {
+      "noData": "इस फसल के लिए भाव डेटा नहीं मिला।",
+      "fetchFail": "बाजार भाव लाने में विफल।"
+    }
+  },
+  "loan": {
+    "title": "लोन गेटवे",
+    "subtitle": "अपनी स्थिति के लिए सबसे अच्छी सरकारी लोन योजना खोजें",
+    "fromDisease": "रोग पहचान से आ रहे हैं",
+    "fromDiseaseDesc": "फसल: {{crop}} · रोग: {{disease}}",
+    "fromDiseaseCost": "₹{{cost}} की अनुमानित उपचार लागत नीचे पहले से भरी है।",
+    "costLabel": "अनुमानित उपचार लागत (₹)",
+    "landLabel": "आपकी जमीन का आकार (एकड़)",
+    "findBtn": "मिलती लोन योजनाएं खोजें",
+    "findingBtn": "योजनाएं खोजी जा रही हैं...",
+    "bestMatch": "आपके लिए सबसे अच्छा विकल्प",
+    "allSchemes": "सभी मिलती योजनाएं ({{count}})",
+    "upTo": "₹{{amount}} तक",
+    "interest": "{{rate}}% ब्याज",
+    "processing": "{{time}}",
+    "eligibility": "पात्रता",
+    "documents": "जरूरी दस्तावेज",
+    "fillForm": "पहले से भरा आवेदन भरें",
+    "applicationTitle": "आवेदन फॉर्म",
+    "personalDetails": "व्यक्तिगत विवरण",
+    "landCropDetails": "जमीन और फसल विवरण",
+    "bankDetails": "बैंक विवरण",
+    "fullName": "पूरा नाम",
+    "fullNamePlaceholder": "आधार कार्ड के अनुसार",
+    "aadhaar": "आधार नंबर",
+    "aadhaarPlaceholder": "12 अंकों का आधार नंबर",
+    "phone": "फोन नंबर",
+    "phonePlaceholder": "10 अंकों का मोबाइल नंबर",
+    "address": "पूरा पता",
+    "addressPlaceholder": "गाँव, तहसील",
+    "state": "राज्य",
+    "statePlaceholder": "जैसे महाराष्ट्र",
+    "district": "जिला",
+    "districtPlaceholder": "जैसे पुणे",
+    "landSize": "जमीन का आकार (एकड़)",
+    "cropName": "फसल का नाम",
+    "cropPlaceholder": "जैसे टमाटर",
+    "treatmentCost": "अनुमानित उपचार लागत (₹)",
+    "bankAccount": "बैंक खाता नंबर",
+    "bankAccountPlaceholder": "खाता नंबर",
+    "bankName": "बैंक का नाम",
+    "bankNamePlaceholder": "जैसे भारतीय स्टेट बैंक",
+    "ifsc": "IFSC कोड",
+    "ifscPlaceholder": "जैसे SBIN0001234",
+    "requiredDocs": "संलग्न करने के लिए जरूरी दस्तावेज",
+    "printBtn": "प्रिंट / PDF के रूप में सहेजें",
+    "applyBtn": "आधिकारिक पोर्टल पर आवेदन करें",
+    "errors": {
+      "fetchFail": "लोन योजनाएं लाने में विफल।"
+    }
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ गलत हुआ।",
+    "na": "उपलब्ध नहीं",
+    "live": "लाइव",
+    "repayment": "पुनर्भुगतान"
+  }
+}

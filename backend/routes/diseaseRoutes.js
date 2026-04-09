@@ -27,7 +27,8 @@ router.post('/detect', upload.single('image'), async (req, res) => {
 
     const { diseaseName, confidence, treatment, estimatedCost, isHealthy } = mlRes.data;
 
-    await DiseaseReport.create({
+    // Save to MongoDB and get the saved document
+    const savedReport = await DiseaseReport.create({
       farmerId,
       cropName,
       imageUrl: req.file.path,
@@ -37,17 +38,19 @@ router.post('/detect', upload.single('image'), async (req, res) => {
       estimatedCost
     });
 
-    fs.unlinkSync(req.file.path);
+    // Option: fs.unlinkSync(req.file.path); // Uncomment if you don't want to keep files locally
 
-    console.log('Disease Step 4 - Saved to MongoDB');
+    console.log('Disease Step 4 - Saved to MongoDB with ID:', savedReport._id);
 
     res.json({
       success: true,
+      reportId: savedReport._id, // Return the ID for Loan Gateway integration
       diseaseName,
       confidence,
       treatment,
       estimatedCost,
-      isHealthy
+      isHealthy,
+      cropName
     });
 
   } catch (err) {
@@ -58,7 +61,7 @@ router.post('/detect', upload.single('image'), async (req, res) => {
 
 router.get('/history/:farmerId', async (req, res) => {
   try {
-    const reports = await DiseaseReport.find({ farmerId: req.params.farmerId });
+    const reports = await DiseaseReport.find({ farmerId: req.params.farmerId }).sort({ createdAt: -1 });
     res.json(reports);
   } catch (err) {
     res.status(500).json({ error: err.message });
