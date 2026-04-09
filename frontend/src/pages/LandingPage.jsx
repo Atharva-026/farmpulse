@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import logo from '../assets/2.png';
 
@@ -269,6 +270,7 @@ function VendorAuth({ onLogin }) {
 /* ─── Main Landing Page ────────────────────────────────────────────────────── */
 export default function LandingPage({ onFarmerLogin, onVendorLogin }) {
   const [portal, setPortal] = useState(null); // null | 'farmer' | 'vendor'
+  const navigate = useNavigate();
 
   const features = [
     { icon: '🌱', label: 'AI Crop Advisor', desc: 'Get personalized crop suggestions based on your soil and climate' },
@@ -316,6 +318,11 @@ export default function LandingPage({ onFarmerLogin, onVendorLogin }) {
             <span style={{ color: '#fff', fontWeight: '800', fontSize: '26px', letterSpacing: '-0.3px' }}>FarmPulse</span>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={() => navigate('/about')} style={{
+              padding: '8px 18px', borderRadius: '20px', border: '1.5px solid rgba(255,255,255,0.5)',
+              background: 'rgba(255, 255, 255, 0.15)', color: '#fff', fontSize: '13px', fontWeight: '600',
+              cursor: 'pointer', fontFamily: 'inherit'
+            }}>About</button>
             <button onClick={() => setPortal('farmer')} style={{
               padding: '8px 18px', borderRadius: '20px', border: '1.5px solid rgba(255,255,255,0.5)',
               background: 'transparent', color: '#fff', fontSize: '13px', fontWeight: '600',

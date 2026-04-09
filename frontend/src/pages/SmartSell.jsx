@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const API = 'http://localhost:5000/api';
@@ -114,7 +115,11 @@ function MandiTab(){
             </div>
           )}
 
-          {result.mandis.map((m,i)=>{
+          {result.mandis.length === 0 ? (
+            <div style={{background:'#FFF8E1',border:`1px solid ${C.amberLight}`,borderRadius:'12px',padding:'18px',marginTop:'12px',color:C.sub}}>
+              No mandi prices found for <strong>{searchedCrop}</strong> yet. Try a different crop name or check back later.
+            </div>
+          ) : result.mandis.map((m,i)=>{
             const isLocal=farmerState&&m.state?.toLowerCase().includes(farmerState.toLowerCase());
             const prevIsLocal=i>0&&farmerState&&result.mandis[i-1].state?.toLowerCase().includes(farmerState.toLowerCase());
             return(

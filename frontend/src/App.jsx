@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LandingPage from './pages/LandingPage';
+import About from './pages/About';
 import Dashboard from './pages/Dashboard';
 import CropRecommend from './pages/CropRecommend';
 import DiseaseDetect from './pages/DiseaseDetect';
@@ -40,6 +41,7 @@ function FarmerApp({ farmer, onLogout }) {
           <Route path="/disease" element={<DiseaseDetect />} />
           <Route path="/loan"    element={<LoanGateway />} />
           <Route path="/sell"    element={<SmartSell />} />
+          <Route path="/about"   element={<About />} />
           <Route path="*"        element={<Navigate to="/" />} />
         </Routes>
       </div>
@@ -94,13 +96,14 @@ function AppShell() {
     return <VendorApp onVendorLogout={handleVendorLogout} />;
   }
 
-  // Farmer not logged in → show landing
+  // Farmer not logged in → show landing and public pages
   if (!farmer) {
     return (
-      <LandingPage
-        onFarmerLogin={handleFarmerLogin}
-        onVendorLogin={handleVendorLogin}
-      />
+      <Routes>
+        <Route path="/" element={<LandingPage onFarmerLogin={handleFarmerLogin} onVendorLogin={handleVendorLogin} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     );
   }
 

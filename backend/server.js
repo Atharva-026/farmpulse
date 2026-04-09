@@ -24,5 +24,3 @@ app.use('/api/vendor-listings', require('./routes/vendorPriceListingRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-const MarketListing = require('../models/MarketListing');
