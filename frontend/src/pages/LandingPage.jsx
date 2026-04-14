@@ -14,10 +14,10 @@ const STATES = [
 ];
 
 /* ─── shared styles ────────────────────────────────────────────────────────── */
-const inp = (focus) => ({
+const inp = (focus, focusColor = '#2E7D32', idleColor = '#D7E8D7') => ({
   display: 'block', width: '100%', padding: '11px 14px',
   marginTop: '5px', marginBottom: '14px', borderRadius: '10px',
-  border: `1.5px solid ${focus ? '#2E7D32' : '#D7E8D7'}`,
+  border: `1.5px solid ${focus ? focusColor : idleColor}`,
   fontSize: '14px', boxSizing: 'border-box',
   background: '#fff', color: '#1a1a1a', fontFamily: 'inherit',
   outline: 'none', transition: 'border-color 0.2s',
@@ -32,12 +32,12 @@ function Field({ label, children }) {
   );
 }
 
-function FocusInput({ label, style, ...props }) {
+function FocusInput({ label, style, focusColor = '#2E7D32', idleColor = '#D7E8D7', ...props }) {
   const [focus, setFocus] = useState(false);
   return (
     <Field label={label}>
       <input
-        style={{ ...inp(focus), ...style }}
+        style={{ ...inp(focus, focusColor, idleColor), ...style }}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         {...props}
@@ -46,12 +46,12 @@ function FocusInput({ label, style, ...props }) {
   );
 }
 
-function FocusSelect({ label, children, ...props }) {
+function FocusSelect({ label, children, focusColor = '#2E7D32', idleColor = '#D7E8D7', ...props }) {
   const [focus, setFocus] = useState(false);
   return (
     <Field label={label}>
       <select
-        style={inp(focus)}
+        style={inp(focus, focusColor, idleColor)}
         onFocus={() => setFocus(true)}
         onBlur={() => setFocus(false)}
         {...props}
@@ -72,7 +72,7 @@ function FarmerAuth({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
 
-  const hc = k => e => setForm({ ...form, [k]: e.target.value });
+  const hc = k => e => setForm(prev => ({ ...prev, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setErr(''); setLoading(true);
@@ -104,7 +104,7 @@ function FarmerAuth({ onLogin }) {
       {/* Mode tabs */}
       <div style={{ display: 'flex', background: '#E8F5E9', borderRadius: '10px', padding: '4px', marginBottom: '22px' }}>
         {['login', 'register'].map(m => (
-          <button key={m} onClick={() => { setMode(m); setErr(''); }} style={{
+          <button type="button" key={m} onClick={() => { setMode(m); setErr(''); }} style={{
             flex: 1, border: 'none', cursor: 'pointer', padding: '9px',
             borderRadius: '8px', fontSize: '13px', fontWeight: mode === m ? '700' : '500',
             background: mode === m ? '#2E7D32' : 'transparent',
@@ -173,7 +173,7 @@ function VendorAuth({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
 
-  const hc = k => e => setForm({ ...form, [k]: e.target.value });
+  const hc = k => e => setForm(prev => ({ ...prev, [k]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault(); setErr(''); setLoading(true);
@@ -199,30 +199,11 @@ function VendorAuth({ onLogin }) {
     setLoading(false);
   };
 
-  const vendorInp = (focus) => ({ ...inp(focus), border: `1.5px solid ${focus ? '#4527A0' : '#D1C4E9'}` });
-
-  function VInp({ label, style, ...props }) {
-    const [focus, setFocus] = useState(false);
-    return (
-      <Field label={label}>
-        <input style={{ ...vendorInp(focus), ...style }} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} {...props} />
-      </Field>
-    );
-  }
-  function VSel({ label, children, ...props }) {
-    const [focus, setFocus] = useState(false);
-    return (
-      <Field label={label}>
-        <select style={vendorInp(focus)} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} {...props}>{children}</select>
-      </Field>
-    );
-  }
-
   return (
     <div>
       <div style={{ display: 'flex', background: '#EDE7F6', borderRadius: '10px', padding: '4px', marginBottom: '22px' }}>
         {['login', 'register'].map(m => (
-          <button key={m} onClick={() => { setMode(m); setErr(''); }} style={{
+          <button type="button" key={m} onClick={() => { setMode(m); setErr(''); }} style={{
             flex: 1, border: 'none', cursor: 'pointer', padding: '9px',
             borderRadius: '8px', fontSize: '13px', fontWeight: mode === m ? '700' : '500',
             background: mode === m ? '#4527A0' : 'transparent',
@@ -240,20 +221,20 @@ function VendorAuth({ onLogin }) {
       <form onSubmit={handleSubmit}>
         {mode === 'register' && (
           <>
-            <VInp label="Your Name *" value={form.name} onChange={hc('name')} placeholder="Full name" required />
-            <VInp label="Business Name *" value={form.businessName} onChange={hc('businessName')} placeholder="Company / shop name" required />
-            <VInp label="Email" type="email" value={form.email} onChange={hc('email')} placeholder="Optional" />
+            <FocusInput label="Your Name *" value={form.name} onChange={hc('name')} placeholder="Full name" required focusColor="#4527A0" idleColor="#D1C4E9" />
+            <FocusInput label="Business Name *" value={form.businessName} onChange={hc('businessName')} placeholder="Company / shop name" required focusColor="#4527A0" idleColor="#D1C4E9" />
+            <FocusInput label="Email" type="email" value={form.email} onChange={hc('email')} placeholder="Optional" focusColor="#4527A0" idleColor="#D1C4E9" />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 14px' }}>
-              <VSel label="State" value={form.state} onChange={hc('state')}>
+              <FocusSelect label="State" value={form.state} onChange={hc('state')} focusColor="#4527A0" idleColor="#D1C4E9">
                 <option value="">Select state</option>
                 {STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </VSel>
-              <VInp label="City" value={form.city} onChange={hc('city')} placeholder="e.g. Bengaluru" />
+              </FocusSelect>
+              <FocusInput label="City" value={form.city} onChange={hc('city')} placeholder="e.g. Bengaluru" focusColor="#4527A0" idleColor="#D1C4E9" />
             </div>
-            <VInp label="Preferred Crops (comma-separated)" value={form.preferredCrops} onChange={hc('preferredCrops')} placeholder="tomato, onion, potato" />
+            <FocusInput label="Preferred Crops (comma-separated)" value={form.preferredCrops} onChange={hc('preferredCrops')} placeholder="tomato, onion, potato" focusColor="#4527A0" idleColor="#D1C4E9" />
           </>
         )}
-        <VInp label="Phone Number *" value={form.phone} onChange={hc('phone')} placeholder="10-digit mobile number" required />
+        <FocusInput label="Phone Number *" value={form.phone} onChange={hc('phone')} placeholder="10-digit mobile number" required focusColor="#4527A0" idleColor="#D1C4E9" />
         <button type="submit" disabled={loading} style={{
           width: '100%', padding: '12px', border: 'none', borderRadius: '10px',
           background: '#4527A0', color: '#fff', fontSize: '15px', fontWeight: '700',

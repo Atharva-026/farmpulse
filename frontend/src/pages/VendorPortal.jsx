@@ -68,7 +68,7 @@ function AuthScreen({onLogin}){
   const [form,setForm]=useState({phone:'',name:'',businessName:'',email:'',state:'',city:'',preferredCrops:''});
   const [loading,setLoading]=useState(false);
   const [err,setErr]=useState('');
-  const hc=k=>e=>setForm({...form,[k]:e.target.value});
+  const hc=k=>e=>setForm(prev=>({...prev,[k]:e.target.value}));
 
   const handleSubmit=async(e)=>{
     e.preventDefault();setErr('');setLoading(true);
@@ -174,7 +174,7 @@ function BrowseListings({vendor}){
 
   useEffect(()=>{load();},[]);
 
-  const hf=k=>e=>setFilters({...filters,[k]:e.target.value});
+  const hf=k=>e=>setFilters(prev=>({...prev,[k]:e.target.value}));
 
   const openBid=listing=>{
     setBidModal(listing);
@@ -291,15 +291,15 @@ function BrowseListings({vendor}){
               <form onSubmit={submitBid}>
                 <label style={lbl}>Your Offer (₹/qtl) *</label>
                 <input style={inp} type="number" value={bidForm.offeredPrice}
-                  onChange={e=>setBidForm({...bidForm,offeredPrice:e.target.value})} placeholder="Price per quintal" required
+                  onChange={e=>setBidForm(prev=>({...prev,offeredPrice:e.target.value}))} placeholder="Price per quintal" required
                   onFocus={e=>e.target.style.borderColor=C.vendor} onBlur={e=>e.target.style.borderColor=C.border}/>
                 <label style={lbl}>Quantity Needed (qtl) *</label>
                 <input style={inp} type="number" value={bidForm.quantityNeeded}
-                  onChange={e=>setBidForm({...bidForm,quantityNeeded:e.target.value})} placeholder={`Max ${bidModal.quantity}`} required
+                  onChange={e=>setBidForm(prev=>({...prev,quantityNeeded:e.target.value}))} placeholder={`Max ${bidModal.quantity}`} required
                   onFocus={e=>e.target.style.borderColor=C.vendor} onBlur={e=>e.target.style.borderColor=C.border}/>
                 <label style={lbl}>Message to Farmer (optional)</label>
                 <textarea style={{...inp,height:'64px',resize:'vertical'}}
-                  value={bidForm.message} onChange={e=>setBidForm({...bidForm,message:e.target.value})}
+                  value={bidForm.message} onChange={e=>setBidForm(prev=>({...prev,message:e.target.value}))}
                   placeholder="Payment terms, pickup, transport…"
                   onFocus={e=>e.target.style.borderColor=C.vendor} onBlur={e=>e.target.style.borderColor=C.border}/>
                 <div style={{display:'flex',gap:'10px'}}>
@@ -472,7 +472,7 @@ function MyBuyOffers({vendor}){
     return()=>es.close();
   },[vendor._id,load,addToast]);
 
-  const hc=k=>e=>setForm({...form,[k]:e.target.value});
+  const hc=k=>e=>setForm(prev=>({...prev,[k]:e.target.value}));
 
   const submitOffer=async(e)=>{
     e.preventDefault();setErr('');setPosting(true);

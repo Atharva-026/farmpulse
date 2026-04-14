@@ -19,13 +19,25 @@ import io
 app = Flask(__name__)
 CORS(app)
 
-MODEL_PATH = 'crop_model.pkl'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'crop_model.pkl')
+DATASET_PATH = os.path.join(BASE_DIR, 'Crop_recommendation.csv')
 
 # =========================
 # Crop Model Training
 # =========================
 def train_and_save_model():
-    df = pd.read_csv('Crop_recommendation.csv')
+    # Auto-detect delimiter (comma/tab) and normalize column names.
+    df = pd.read_csv(DATASET_PATH, sep=None, engine='python')
+    df.columns = df.columns.str.strip().str.replace('\ufeff', '', regex=False)
+
+    required_columns = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall', 'label']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    if missing_columns:
+        raise ValueError(
+            f"Dataset is missing columns: {missing_columns}. "
+            f"Found columns: {list(df.columns)}"
+        )
 
     X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
     y = df['label']
