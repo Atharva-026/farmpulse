@@ -12,15 +12,16 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 
-app.use('/api/farmer', require('./routes/farmerRoutes'));
-app.use('/api/location', require('./routes/locationRoutes'));
-app.use('/api/crop', require('./routes/cropRoutes'));
-app.use('/api/disease', require('./routes/diseaseRoutes'));
-app.use('/api/market', require('./routes/marketRoutes'));
-app.use('/api/loan', require('./routes/loanRoutes'));
-app.use('/api/vendor', require('./routes/vendorRoutes'));
-app.use('/api/bids', require('./routes/bidRoutes'));
+app.use('/api/farmer',          require('./routes/farmerRoutes'));
+app.use('/api/location',        require('./routes/locationRoutes'));
+app.use('/api/crop',            require('./routes/cropRoutes'));
+app.use('/api/disease',         require('./routes/diseaseRoutes'));
+app.use('/api/market',          require('./routes/marketRoutes'));
+app.use('/api/loan',            require('./routes/loanRoutes'));
+app.use('/api/vendor',          require('./routes/vendorRoutes'));
+app.use('/api/bids',            require('./routes/bidRoutes'));
 app.use('/api/vendor-listings', require('./routes/vendorPriceListingRoutes'));
+app.use('/api/community',       require('./routes/communityRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
