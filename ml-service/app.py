@@ -1,5 +1,3 @@
-
-
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,9 +10,12 @@ from sklearn.model_selection import train_test_split
 import pickle
 import os
 import base64
-import requests as http_requests
+import json
 from PIL import Image
 import io
+import time
+from google import genai
+from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
@@ -23,15 +24,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, 'crop_model.pkl')
 DATASET_PATH = os.path.join(BASE_DIR, 'Crop_recommendation.csv')
 
+# Gemini client (used for disease detection)
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+print('Gemini key loaded:', GEMINI_API_KEY[:8] if GEMINI_API_KEY else 'NO KEY FOUND')
+
+FEATURE_COLS = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
+
 # =========================
 # Crop Model Training
 # =========================
 def train_and_save_model():
-    # Auto-detect delimiter (comma/tab) and normalize column names.
     df = pd.read_csv(DATASET_PATH, sep=None, engine='python')
     df.columns = df.columns.str.strip().str.replace('\ufeff', '', regex=False)
 
-    required_columns = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall', 'label']
+    required_columns = FEATURE_COLS + ['label']
     missing_columns = [col for col in required_columns if col not in df.columns]
     if missing_columns:
         raise ValueError(
@@ -39,7 +46,7 @@ def train_and_save_model():
             f"Found columns: {list(df.columns)}"
         )
 
-    X = df[['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']]
+    X = df[FEATURE_COLS]
     y = df['label']
 
     X_train, X_test, y_train, y_test = train_test_split(
@@ -117,10 +124,11 @@ def predict_crop():
 
     npk = SOIL_TO_NPK.get(soil, SOIL_TO_NPK['loamy'])
 
-    features = [[
-        npk['N'], npk['P'], npk['K'],
-        temp, humidity, npk['ph'], rainfall
-    ]]
+    # Use a named DataFrame so sklearn doesn't warn about missing feature names
+    features = pd.DataFrame(
+        [[npk['N'], npk['P'], npk['K'], temp, humidity, npk['ph'], rainfall]],
+        columns=FEATURE_COLS
+    )
 
     prediction = model.predict(features)[0]
     probabilities = model.predict_proba(features)[0]
@@ -139,51 +147,30 @@ def predict_crop():
     })
 
 
-# =========================
-# Disease Treatment Data
-# =========================
-DISEASE_TREATMENTS = {
-    'Tomato___Early_blight': {
-        'treatment': 'Apply fungicide like mancozeb.',
-        'cost': 1500
-    },
-    'Tomato___Late_blight': {
-        'treatment': 'Apply metalaxyl immediately.',
-        'cost': 2500
-    },
-    'Potato___Early_blight': {
-        'treatment': 'Use chlorothalonil fungicide.',
-        'cost': 1800
-    },
-    'Rice___Leaf_blast': {
-        'treatment': 'Apply tricyclazole.',
-        'cost': 2200
-    },
-    'Rice___healthy': {
-        'treatment': 'Crop is healthy.',
-        'cost': 0
-    },
-    'Mango___Anthracnose': {
-        'treatment': 'Spray Copper Oxychloride 3g/L.',
-        'cost': 1200
-    },
-    'Mango___Bacterial_Canker': {
-        'treatment': 'Prune infected twigs and apply Bordeaux paste.',
-        'cost': 900
-    },
-    'Apple___Apple_scab': {
-        'treatment': 'Apply Captan or Mancozeb fungicides.',
-        'cost': 2100
-    },
-    'Corn_(maize)___Common_rust': {
-        'treatment': 'Use resistant hybrids or apply Tilt fungicide.',
-        'cost': 1600
-    }
-}
+
+# Try the primary model, retry on overload (503), then fall back to lighter models
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
+
+def generate_with_fallback(contents, config):
+    last_err = None
+    for model_name in GEMINI_MODELS:
+        for attempt in range(2):
+            try:
+                return gemini_client.models.generate_content(
+                    model=model_name, contents=contents, config=config
+                )
+            except Exception as e:
+                last_err = e
+                msg = str(e)
+                if '503' in msg or 'UNAVAILABLE' in msg or 'overloaded' in msg:
+                    time.sleep(1.5)   # transient overload -> retry / next model
+                    continue
+                break                 # other error -> try next model
+    raise last_err
 
 
 # =========================
-# Disease Detection API
+# Disease Detection API (Gemini Vision)
 # =========================
 @app.route('/detect-disease', methods=['POST'])
 def detect_disease():
@@ -192,92 +179,59 @@ def detect_disease():
         image_base64 = data.get('image')
         crop_name = data.get('cropName', 'unknown')
 
-        HF_API_KEY = os.environ.get('HUGGINGFACE_API_KEY', '')
-        print('HF Key loaded:', HF_API_KEY[:10] if HF_API_KEY else 'NO KEY FOUND')
+        if not gemini_client:
+            return jsonify({'error': 'GEMINI_API_KEY not set in ml-service/.env'}), 500
 
-        API_URL = "https://router.huggingface.co/hf-inference/models/ozair23/mobilenet_v2_1.0_224-finetuned-plantdisease"
-
+        # Decode + normalize the image
         try:
             image_bytes = base64.b64decode(image_base64)
-            print('Original image size:', len(image_bytes))
-
-            img = Image.open(io.BytesIO(image_bytes))
-            img = img.convert('RGB')
-            img = img.resize((224, 224))
-
-            buffer = io.BytesIO()
-            img.save(buffer, format='JPEG', quality=85)
-            image_bytes = buffer.getvalue()
-            print('Resized image size:', len(image_bytes))
-
+            img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+            img = img.resize((512, 512))
+            buf = io.BytesIO()
+            img.save(buf, format='JPEG', quality=85)
+            image_bytes = buf.getvalue()
         except Exception as decode_err:
-            print('Image processing error:', str(decode_err))
             return jsonify({'error': 'Image processing failed', 'details': str(decode_err)}), 500
 
-        headers = {
-            "Authorization": f"Bearer {HF_API_KEY}",
-            "Content-Type": "application/octet-stream"
-        }
+        prompt = f"""You are an expert plant pathologist. The user says this leaf is from a "{crop_name}" plant.
+Look at the leaf photo and identify the plant disease, or confirm it is healthy.
 
+Respond with ONLY a JSON object (no markdown, no extra text) in exactly this shape:
+{{
+  "diseaseName": "common name of the disease, or 'Healthy' if no disease is visible",
+  "isHealthy": true or false,
+  "confidence": a number from 0 to 100,
+  "treatment": "one or two short, practical sentences of treatment advice for an Indian farmer",
+  "estimatedCost": realistic total cost in Indian Rupees to treat this specific disease on about one acre, as a plain integer (no commas, no symbols). Base it on typical Indian agro-chemical prices and this disease's severity. Use 0 only if the plant is healthy,
+  "isWarning": true if the photo is blurry, is not a leaf, or clearly does not match the "{crop_name}" crop; otherwise false
+}}"""
+
+        response = generate_with_fallback(
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg"),
+                prompt
+            ],
+            config=types.GenerateContentConfig(response_mime_type="application/json")
+        )
+
+        raw = response.text.strip()
+        print('Gemini raw:', raw[:500])
+        result = json.loads(raw)
+
+        # Coerce cost to a clean integer (handles "1500", "₹1,500", 1500.0, etc.)
+        cost = result.get('estimatedCost', 0)
         try:
-            response = http_requests.post(API_URL, headers=headers, data=image_bytes, timeout=30)
-            print('HF Response status:', response.status_code)
-            print('HF Response body:', response.text[:300])
-        except Exception as api_err:
-            print('HF API call error:', str(api_err))
-            return jsonify({'error': 'HF API call failed', 'details': str(api_err)}), 500
-
-        if response.status_code != 200:
-            print('HF API Error:', response.status_code, response.text)
-            return jsonify({
-                'error': 'Hugging Face API failed',
-                'status': response.status_code,
-                'details': response.text
-            }), 500
-
-        results = response.json()
-        print('HF Results:', results)
-
-        if isinstance(results, list) and len(results) > 0:
-            top_result = results[0]
-            disease_label = top_result.get('label', 'Unknown')
-            confidence = round(top_result.get('score', 0) * 100, 2)
-        else:
-            return jsonify({'error': 'No results from model', 'raw': results}), 500
-
-        # Confidence threshold and crop name matching check
-        label_normalized = disease_label.lower().replace('_', ' ')
-        crop_name_lower = crop_name.lower()
-        
-        is_mismatch = crop_name_lower not in label_normalized and crop_name_lower != 'unknown'
-        is_low_confidence = confidence < 40
-        
-        # If confidence is too low or crop doesn't match, provide a warning
-        if is_low_confidence or is_mismatch:
-            return jsonify({
-                'diseaseName': f"Uncertain (Detected {disease_label})",
-                'confidence': confidence,
-                'treatment': f"The model is unsure. It detected characteristics of {disease_label}, but this doesn't match your selection of {crop_name}. Please provide a clearer photo.",
-                'estimatedCost': 0,
-                'isHealthy': False,
-                'isWarning': True,
-                'cropName': crop_name
-            })
-
-        treatment_info = DISEASE_TREATMENTS.get(disease_label, {
-            'treatment': 'Consult local agronomist for detailed advice.',
-            'cost': 1000
-        })
-
-        is_healthy = 'healthy' in disease_label.lower()
+            cost = int(float(str(cost).replace(',', '').replace('₹', '').strip()))
+        except (ValueError, TypeError):
+            cost = 0
 
         return jsonify({
-            'diseaseName': disease_label,
-            'confidence': confidence,
-            'treatment': treatment_info['treatment'],
-            'estimatedCost': treatment_info['cost'],
-            'isHealthy': is_healthy,
-            'isWarning': False,
+            'diseaseName': result.get('diseaseName', 'Unknown'),
+            'confidence': result.get('confidence', 0),
+            'treatment': result.get('treatment', 'Consult a local agronomist.'),
+            'estimatedCost': cost,
+            'isHealthy': bool(result.get('isHealthy', False)),
+            'isWarning': bool(result.get('isWarning', False)),
             'cropName': crop_name
         })
 

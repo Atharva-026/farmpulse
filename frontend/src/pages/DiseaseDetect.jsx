@@ -6,53 +6,11 @@ import { useSpeechOutput } from '../hooks/useVoice';
 import useLangCode from '../hooks/useLangCode';
 
 const SUPPORTED_CROPS = [
-  'Apple', 'Blueberry', 'Cherry', 'Corn', 'Grape',
-  'Orange', 'Peach', 'Bell Pepper', 'Potato', 'Raspberry',
-  'Soybean', 'Squash', 'Strawberry', 'Tomato'
+  'Apple', 'Banana', 'Bell Pepper', 'Cabbage', 'Chili', 'Corn',
+  'Cotton', 'Grape', 'Guava', 'Mango', 'Onion', 'Orange',
+  'Papaya', 'Peach', 'Pomegranate', 'Potato', 'Rice', 'Soybean',
+  'Strawberry', 'Sugarcane', 'Tomato', 'Wheat'
 ];
-
-const UNSUPPORTED_CROPS = ['Mango', 'Wheat', 'Rice', 'Sugarcane', 'Cotton', 'Banana', 'Coconut', 'Onion', 'Groundnut', 'Sorghum'];
-
-const DISEASE_TREATMENTS = {
-  'Apple___Apple_scab':                                   { treatment: 'Apply captan or mancozeb fungicide. Remove and destroy infected leaves. Ensure good air circulation.', cost: 1800, severity: 'moderate' },
-  'Apple___Black_rot':                                    { treatment: 'Prune infected branches. Apply copper-based fungicide. Remove mummified fruit.', cost: 2200, severity: 'high' },
-  'Apple___Cedar_apple_rust':                             { treatment: 'Apply myclobutanil fungicide at pink bud stage. Remove nearby cedar trees if possible.', cost: 2000, severity: 'moderate' },
-  'Apple___healthy':                                      { treatment: 'Crop looks healthy! Maintain regular watering and fertilization schedule.', cost: 0, severity: 'none' },
-  'Blueberry___healthy':                                  { treatment: 'Crop looks healthy! Maintain soil pH between 4.5–5.5 for best growth.', cost: 0, severity: 'none' },
-  'Cherry_(including_sour)___Powdery_mildew':             { treatment: 'Apply sulfur-based fungicide. Improve air circulation. Avoid overhead irrigation.', cost: 1600, severity: 'moderate' },
-  'Cherry_(including_sour)___healthy':                    { treatment: 'Crop looks healthy! Prune for airflow and monitor regularly.', cost: 0, severity: 'none' },
-  'Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot':   { treatment: 'Apply strobilurin fungicide. Rotate crops annually. Use resistant varieties.', cost: 2000, severity: 'moderate' },
-  'Corn_(maize)___Common_rust_':                          { treatment: 'Apply triazole fungicide at early stages. Plant rust-resistant hybrids next season.', cost: 1700, severity: 'moderate' },
-  'Corn_(maize)___Northern_Leaf_Blight':                  { treatment: 'Apply propiconazole fungicide. Rotate with non-host crops. Bury crop residue after harvest.', cost: 2100, severity: 'high' },
-  'Corn_(maize)___healthy':                               { treatment: 'Crop looks healthy! Ensure adequate nitrogen fertilization.', cost: 0, severity: 'none' },
-  'Grape___Black_rot':                                    { treatment: 'Apply mancozeb or captan fungicide. Remove infected berries immediately. Prune for airflow.', cost: 2500, severity: 'high' },
-  'Grape___Esca_(Black_Measles)':                         { treatment: 'No chemical cure available. Remove infected wood surgically. Apply wound sealant after pruning.', cost: 4000, severity: 'severe' },
-  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)':           { treatment: 'Apply copper-based fungicide. Remove fallen leaves. Avoid wetting foliage.', cost: 1900, severity: 'moderate' },
-  'Grape___healthy':                                      { treatment: 'Crop looks healthy! Monitor for pests and maintain trellising.', cost: 0, severity: 'none' },
-  'Orange___Haunglongbing_(Citrus_greening)':             { treatment: 'No cure exists. Remove and destroy infected trees immediately. Control psyllid insects with imidacloprid.', cost: 8000, severity: 'severe' },
-  'Peach___Bacterial_spot':                               { treatment: 'Apply copper hydroxide spray. Avoid overhead watering. Use disease-free nursery stock.', cost: 2000, severity: 'moderate' },
-  'Peach___healthy':                                      { treatment: 'Crop looks healthy! Apply dormant spray in winter to prevent bacterial infections.', cost: 0, severity: 'none' },
-  'Pepper,_bell___Bacterial_spot':                        { treatment: 'Apply copper-based bactericide. Remove infected plant debris. Avoid working in wet fields.', cost: 1500, severity: 'moderate' },
-  'Pepper,_bell___healthy':                               { treatment: 'Crop looks healthy! Maintain consistent irrigation and watch for aphids.', cost: 0, severity: 'none' },
-  'Potato___Early_blight':                                { treatment: 'Apply chlorothalonil or mancozeb fungicide. Remove lower infected leaves. Ensure proper spacing.', cost: 1800, severity: 'moderate' },
-  'Potato___Late_blight':                                 { treatment: 'Apply metalaxyl or cymoxanil immediately — late blight spreads rapidly. Destroy infected plants.', cost: 3000, severity: 'severe' },
-  'Potato___healthy':                                     { treatment: 'Crop looks healthy! Hill up soil around plants and monitor for Colorado beetle.', cost: 0, severity: 'none' },
-  'Raspberry___healthy':                                  { treatment: 'Crop looks healthy! Prune old canes after harvest for next season growth.', cost: 0, severity: 'none' },
-  'Soybean___healthy':                                    { treatment: 'Crop looks healthy! Check for soybean cyst nematode if yields are low.', cost: 0, severity: 'none' },
-  'Squash___Powdery_mildew':                              { treatment: 'Apply potassium bicarbonate or neem oil spray. Improve air circulation. Water at base only.', cost: 1200, severity: 'low' },
-  'Strawberry___Leaf_scorch':                             { treatment: 'Remove infected leaves. Apply myclobutanil fungicide. Avoid overhead irrigation.', cost: 1400, severity: 'moderate' },
-  'Strawberry___healthy':                                 { treatment: 'Crop looks healthy! Renew bed every 3–4 years for best yields.', cost: 0, severity: 'none' },
-  'Tomato___Bacterial_spot':                              { treatment: 'Apply copper bactericide spray. Remove infected debris. Avoid working in wet conditions.', cost: 1600, severity: 'moderate' },
-  'Tomato___Early_blight':                                { treatment: 'Apply mancozeb or chlorothalonil fungicide. Remove lower infected leaves. Stake plants for airflow.', cost: 1500, severity: 'moderate' },
-  'Tomato___Late_blight':                                 { treatment: 'Apply metalaxyl immediately. Late blight can wipe out crop in days. Destroy heavily infected plants.', cost: 2500, severity: 'severe' },
-  'Tomato___Leaf_Mold':                                   { treatment: 'Apply chlorothalonil fungicide. Reduce humidity in greenhouse. Improve ventilation.', cost: 1400, severity: 'moderate' },
-  'Tomato___Septoria_leaf_spot':                          { treatment: 'Apply mancozeb or copper fungicide. Remove infected lower leaves. Mulch around base.', cost: 1600, severity: 'moderate' },
-  'Tomato___Spider_mites Two-spotted_spider_mite':        { treatment: 'Apply miticide. Spray underside of leaves. Use neem oil for organic option.', cost: 1800, severity: 'moderate' },
-  'Tomato___Target_Spot':                                 { treatment: 'Apply azoxystrobin or chlorothalonil. Maintain dry foliage. Rotate crops next season.', cost: 1700, severity: 'moderate' },
-  'Tomato___Tomato_Yellow_Leaf_Curl_Virus':               { treatment: 'No cure — remove and destroy infected plants. Control whitefly vectors with imidacloprid.', cost: 3500, severity: 'severe' },
-  'Tomato___Tomato_mosaic_virus':                         { treatment: 'No cure — remove infected plants. Disinfect tools. Control aphid vectors.', cost: 3000, severity: 'severe' },
-  'Tomato___healthy':                                     { treatment: 'Crop looks healthy! Maintain consistent watering and monitor for whitefly.', cost: 0, severity: 'none' },
-};
 
 const SEVERITY_COLORS = {
   none:     { bg: '#E8F5E9', border: '#4CAF50', text: '#1B5E20', badge: '#4CAF50' },
@@ -114,18 +72,12 @@ export default function DiseaseDetect() {
       );
       const data = res.data;
 
-      if (data.diseaseName && DISEASE_TREATMENTS[data.diseaseName]) {
-        const local = DISEASE_TREATMENTS[data.diseaseName];
-        data.treatment     = local.treatment;
-        data.estimatedCost = local.cost;
-        data.severity      = local.severity;
-      } else {
-        data.severity      = data.isHealthy ? 'none' : 'moderate';
-        data.estimatedCost = data.estimatedCost || 1000;
-      }
+      // Gemini returns diseaseName, treatment and a real cost estimate — use them directly
+      data.severity = data.isHealthy ? 'none' : (data.severity || 'moderate');
+      if (data.estimatedCost == null) data.estimatedCost = 0;
 
-      const cropMatch = data.diseaseName?.toLowerCase().includes(cropName.toLowerCase().split(' ')[0]);
-      if (!cropMatch && !data.isHealthy) {
+      // Trust Gemini's own image-vs-crop check for mismatch
+      if (data.isWarning && !data.isHealthy) {
         data.isMismatch   = true;
         data.selectedCrop = cropName;
       }
@@ -179,13 +131,6 @@ export default function DiseaseDetect() {
                 <span key={c} style={{ background: '#BBDEFB', color: '#0D47A1', padding: '2px 10px', borderRadius: '12px', fontSize: '12px' }}>{c}</span>
               ))}
             </div>
-            <p style={{ margin: '0 0 6px', fontWeight: '600' }}>❌ {t('disease.unsupportedTitle')}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              {UNSUPPORTED_CROPS.map(c => (
-                <span key={c} style={{ background: '#FFCDD2', color: '#B71C1C', padding: '2px 10px', borderRadius: '12px', fontSize: '12px' }}>{c}</span>
-              ))}
-            </div>
-            <p style={{ margin: '8px 0 0', color: '#555', fontSize: '12px' }}>⚠️ {t('disease.unsupportedWarning')}</p>
           </div>
         )}
       </div>
@@ -298,8 +243,8 @@ export default function DiseaseDetect() {
           {result.isMismatch && (
             <div style={{ padding: '14px 24px', background: '#FFF8E1', border: '1px solid #FFE082', fontSize: '13px', color: '#E65100' }}>
               ⚠️ <strong>
-                You selected {result.selectedCrop} but model detected {result.diseaseName.split('___')[0].replace(/_/g, ' ')}.
-                Please re-check the crop selection.
+                This leaf doesn't look like {result.selectedCrop}. Please re-check the crop you
+                selected, or upload a clearer single-leaf photo.
               </strong>
             </div>
           )}

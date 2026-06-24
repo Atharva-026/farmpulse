@@ -66,7 +66,7 @@ function FocusSelect({ label, children, focusColor = '#2E7D32', idleColor = '#D7
 function FarmerAuth({ onLogin }) {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({
-    name: '', phone: '', state: '', district: '', pincode: '',
+    name: '', phone: '', password: '', state: '', district: '', pincode: '',
     landSize: '', soilType: ''
   });
   const [loading, setLoading] = useState(false);
@@ -78,14 +78,14 @@ function FarmerAuth({ onLogin }) {
     e.preventDefault(); setErr(''); setLoading(true);
     try {
       if (mode === 'login') {
-        const res = await axios.post(`${API}/farmer/login`, { phone: form.phone });
+        const res = await axios.post(`${API}/farmer/login`, { phone: form.phone, password: form.password });
         if (res.data.success) onLogin(res.data.farmer);
         else setErr(res.data.message);
       } else {
-        if (!form.name || !form.phone)
-          return setErr('Name and phone are required.');
+        if (!form.name || !form.phone || !form.password)
+          return setErr('Name, phone and password are required.');
         const res = await axios.post(`${API}/farmer/register`, {
-          name: form.name, phone: form.phone,
+          name: form.name, phone: form.phone, password: form.password,
           location: { state: form.state, district: form.district, pincode: form.pincode },
           landSize: form.landSize ? Number(form.landSize) : undefined,
           soilType: form.soilType || undefined,
@@ -150,6 +150,15 @@ function FarmerAuth({ onLogin }) {
           required
         />
 
+        <FocusInput
+          label="Password *"
+          type="password"
+          value={form.password}
+          onChange={hc('password')}
+          placeholder={mode === 'register' ? 'Create a password (min 4 chars)' : 'Your password'}
+          required
+        />
+
         <button type="submit" disabled={loading} style={{
           width: '100%', padding: '12px', border: 'none', borderRadius: '10px',
           background: '#2E7D32', color: '#fff', fontSize: '15px', fontWeight: '700',
@@ -167,7 +176,7 @@ function FarmerAuth({ onLogin }) {
 function VendorAuth({ onLogin }) {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({
-    phone: '', name: '', businessName: '', email: '',
+    phone: '', name: '', businessName: '', email: '', password: '',
     state: '', city: '', preferredCrops: ''
   });
   const [loading, setLoading] = useState(false);
@@ -179,14 +188,14 @@ function VendorAuth({ onLogin }) {
     e.preventDefault(); setErr(''); setLoading(true);
     try {
       if (mode === 'login') {
-        const res = await axios.post(`${API}/vendor/login`, { phone: form.phone });
+        const res = await axios.post(`${API}/vendor/login`, { phone: form.phone, password: form.password });
         if (res.data.success) onLogin(res.data.vendor);
         else setErr(res.data.message);
       } else {
         const crops = form.preferredCrops.split(',').map(s => s.trim()).filter(Boolean);
         const res = await axios.post(`${API}/vendor/register`, {
           name: form.name, businessName: form.businessName,
-          phone: form.phone, email: form.email,
+          phone: form.phone, email: form.email, password: form.password,
           location: { state: form.state, city: form.city },
           preferredCrops: crops
         });
@@ -235,6 +244,7 @@ function VendorAuth({ onLogin }) {
           </>
         )}
         <FocusInput label="Phone Number *" value={form.phone} onChange={hc('phone')} placeholder="10-digit mobile number" required focusColor="#4527A0" idleColor="#D1C4E9" />
+        <FocusInput label="Password *" type="password" value={form.password} onChange={hc('password')} placeholder={mode === 'register' ? 'Create a password (min 4 chars)' : 'Your password'} required focusColor="#4527A0" idleColor="#D1C4E9" />
         <button type="submit" disabled={loading} style={{
           width: '100%', padding: '12px', border: 'none', borderRadius: '10px',
           background: '#4527A0', color: '#fff', fontSize: '15px', fontWeight: '700',

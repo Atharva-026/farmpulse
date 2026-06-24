@@ -15,4 +15,4 @@ ml-service/.env
 frontend/dist
 
 # Dataset - too large for GitHub
-ml-service/Crop_recommendation.csv
+ml-service/Crop_recommendation.csvbackend/uploads/

@@ -65,7 +65,7 @@ function Toast({message,onDone}){
 /* ── Auth Screen ── */
 function AuthScreen({onLogin}){
   const [mode,setMode]=useState('login');
-  const [form,setForm]=useState({phone:'',name:'',businessName:'',email:'',state:'',city:'',preferredCrops:''});
+  const [form,setForm]=useState({phone:'',name:'',businessName:'',email:'',password:'',state:'',city:'',preferredCrops:''});
   const [loading,setLoading]=useState(false);
   const [err,setErr]=useState('');
   const hc=k=>e=>setForm(prev=>({...prev,[k]:e.target.value}));
@@ -74,14 +74,14 @@ function AuthScreen({onLogin}){
     e.preventDefault();setErr('');setLoading(true);
     try{
       if(mode==='login'){
-        const res=await axios.post(`${API}/vendor/login`,{phone:form.phone});
+        const res=await axios.post(`${API}/vendor/login`,{phone:form.phone,password:form.password});
         if(res.data.success)onLogin(res.data.vendor);
         else setErr(res.data.message||'Login failed.');
       }else{
         const crops=form.preferredCrops.split(',').map(s=>s.trim()).filter(Boolean);
         const res=await axios.post(`${API}/vendor/register`,{
           name:form.name,businessName:form.businessName,
-          phone:form.phone,email:form.email,
+          phone:form.phone,email:form.email,password:form.password,
           location:{state:form.state,city:form.city},
           preferredCrops:crops
         });
@@ -136,6 +136,9 @@ function AuthScreen({onLogin}){
           )}
           <label style={lbl}>Phone Number *</label>
           <input style={inp} value={form.phone} onChange={hc('phone')} placeholder="10-digit mobile" required
+            onFocus={e=>e.target.style.borderColor=C.vendor} onBlur={e=>e.target.style.borderColor=C.border}/>
+          <label style={lbl}>Password *</label>
+          <input style={inp} type="password" value={form.password} onChange={hc('password')} placeholder={mode==='register'?'Create a password (min 4 chars)':'Your password'} required
             onFocus={e=>e.target.style.borderColor=C.vendor} onBlur={e=>e.target.style.borderColor=C.border}/>
           <Btn type="submit" full disabled={loading} style={{marginTop:'4px'}}>
             {loading?'Please wait…':mode==='login'?'🔑 Log In':'✅ Create Account'}
