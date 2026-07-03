@@ -15,14 +15,12 @@ const FALLBACK_DATA = {
   cotton: [{ mandi:'Warangal APMC',state:'Telangana',price:6800,trend:'rising',isFallback:true },{ mandi:'Akola Market',state:'Maharashtra',price:6600,trend:'stable',isFallback:true },{ mandi:'Guntur APMC',state:'Andhra Pradesh',price:6700,trend:'rising',isFallback:true }],
 };
 
-function calculateTrend(modal, min, max) {
-  if (!modal || !min || !max) return 'stable';
-  const range = max - min;
-  if (range === 0) return 'stable';
-  const position = (modal - min) / range;
-  if (position >= 0.9) return 'rising';
-  if (position <= 0.1) return 'falling';
-  return 'stable';
+// Real, computable signal: how this mandi's price compares to the average of all mandis
+function priceLevel(price, avg) {
+  if (!avg) return 'around';
+  if (price >= avg * 1.05) return 'above';   // pays noticeably more than average
+  if (price <= avg * 0.95) return 'below';   // pays noticeably less than average
+  return 'around';
 }
 
 async function fetchLivePrices(cropName, stateFilter = null) {
@@ -41,7 +39,6 @@ async function fetchLivePrices(cropName, stateFilter = null) {
       price: parseFloat(r.modal_price) || 0,
       minPrice: parseFloat(r.min_price) || null,
       maxPrice: parseFloat(r.max_price) || null,
-      trend: calculateTrend(parseFloat(r.modal_price), parseFloat(r.min_price), parseFloat(r.max_price)),
       isFallback: false
     })).filter(m => m.price > 0);
 
@@ -67,14 +64,15 @@ router.get('/prices/:cropName', async (req, res) => {
     });
 
     const avgPrice       = mandis.length ? Math.round(mandis.reduce((s, m) => s + m.price, 0) / mandis.length) : 0;
+    mandis.forEach(m => { m.trend = priceLevel(m.price, avgPrice); });
     const prices         = mandis.map(m => m.price);
     const priceVariation = prices.length ? Math.round(Math.max(...prices) - Math.min(...prices)) : 0;
-    const risingCount    = mandis.filter(m => m.trend === 'rising').length;
-    const fallingCount   = mandis.filter(m => m.trend === 'falling').length;
+    const aboveAvgCount  = mandis.filter(m => m.trend === 'above').length;
+    const belowAvgCount  = mandis.filter(m => m.trend === 'below').length;
     const bestMandi      = mandis.reduce((best, m) => (m.price > (best?.price || 0) ? m : best), null);
     const advice         = bestMandi ? `Highest price at ${bestMandi.mandi}, ${bestMandi.state}.` : '';
 
-    res.json({ success:true, mandis, isLive: mandis.some(m => !m.isFallback), avgPrice, priceVariation, risingCount, fallingCount, advice });
+    res.json({ success:true, mandis, isLive: mandis.some(m => !m.isFallback), avgPrice, priceVariation, aboveAvgCount, belowAvgCount, advice });
   } catch (err) {
     res.status(500).json({ success:false, error:'Failed to fetch market prices' });
   }

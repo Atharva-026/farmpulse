@@ -2,15 +2,15 @@
 
 <div align="center">
 
-![FarmPulse Banner](https://img.shields.io/badge/FarmPulse-Agricultural%20AI-2E7D32?style=for-the-badge&logo=leaf&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
-![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js)
+![FarmPulse](https://img.shields.io/badge/FarmPulse-Agricultural%20AI-2E7D32?style=for-the-badge&logo=leaf&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-Express%205-339933?style=flat-square&logo=node.js)
 ![Python](https://img.shields.io/badge/Python-Flask-3776AB?style=flat-square&logo=python)
+![Gemini](https://img.shields.io/badge/Google-Gemini%20Vision-4285F4?style=flat-square&logo=google)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
 **From soil to sale — every farming decision powered by AI**
-
 
 </div>
 
@@ -22,128 +22,117 @@
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
-- [ML Models](#-ml-models)
-- [Screenshots](#-screenshots)
+- [AI & ML](#-ai--ml)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
 - [API Reference](#-api-reference)
 - [Deployment](#-deployment)
 - [Languages Supported](#-languages-supported)
+- [Known Limitations](#-known-limitations)
 - [Contributing](#-contributing)
 
 ---
 
 ## 🌱 About the Project
 
-FarmPulse is a comprehensive full-stack agricultural technology platform designed to empower Indian farmers with data-driven insights, market intelligence, financial tools, and a multilingual community network.
+FarmPulse is a full-stack agricultural technology platform that empowers Indian farmers with data-driven insights, market intelligence, financial tools, and a multilingual community — all in one place, available in four Indian languages.
 
-The platform guides a farmer through their complete journey:
+The platform guides a farmer through their entire journey:
 
 ```
-Know what to grow  →  Detect crop disease  →  Get funded  →  Sell at best price  →  Connect with farmers
-     (AI Crop)           (Computer Vision)      (Loan Match)     (Live Mandi)         (Community)
+Know what to grow  →  Detect crop disease  →  Get funded  →  Sell at the best price  →  Connect with farmers
+   (AI Crop Rec)        (Gemini Vision)       (Loan Match)      (Live Mandi + Bids)        (Community)
 ```
 
 ### 🎯 Problem Statement
 
 Indian farmers face four critical challenges:
-1. **No data** to decide which crop to grow for maximum yield
-2. **Late disease detection** leading to crop loss
-3. **No access** to government loan schemes when disaster strikes
-4. **Price exploitation** by middlemen due to lack of market transparency
 
-FarmPulse solves all four in one platform — free, offline-capable, and available in 4 Indian languages.
+1. **No data** to decide which crop to grow for maximum yield.
+2. **Late disease detection**, leading to avoidable crop loss.
+3. **No easy access** to government loan schemes when disaster strikes.
+4. **Price exploitation** by middlemen due to a lack of market transparency.
+
+FarmPulse addresses all four in a single, free, multilingual platform.
 
 ---
 
 ## ✨ Features
 
 ### 🌾 1. AI Crop Recommendation
-- GPS-based auto-detection of soil type, water availability, temperature and humidity
-- Uses **SoilGrids ISRIC API** (free, 250m global resolution) for real soil composition data
-- Uses **Open-Meteo API** (free, no key) for real-time weather and 30-day rainfall history
-- Random Forest ML model trained on 22 crop classes
-- Returns recommended crop, confidence score, expected yield and profit range
-- Season auto-detected from current month (Kharif/Rabi/Zaid)
+- GPS-based auto-detection of soil type, water availability, temperature, and humidity.
+- **SoilGrids ISRIC API** for real soil composition; **Open-Meteo API** for live weather and rainfall history.
+- Random Forest model trained on **22 crop classes**.
+- Returns recommended crop, confidence score, and estimated yield/profit range.
+- Season auto-detected from the current month (Kharif / Rabi / Zaid).
+- Optional **voice input** — fill the whole form by speaking one sentence.
 
-### 🔬 2. Disease Detection
-- Upload a leaf photo → instant AI diagnosis
-- MobileNetV2 model fine-tuned on **PlantVillage dataset** (54,306 images, 38 disease classes, 14 crops)
-- 97% accuracy on test set
-- Detailed treatment protocol + estimated cost for all 38 disease classes
-- Severity rating (none / low / moderate / high / severe)
-- **One-tap loan application** pre-filled with the treatment cost
+### 🔬 2. Disease Detection (Google Gemini Vision)
+- Upload a leaf photo → instant AI diagnosis.
+- Powered by **Google Gemini Vision** (multimodal) — identifies the disease, assesses severity, and returns a practical treatment protocol.
+- **Not limited to a fixed crop list** — works across a wide range of crops (Mango, Rice, Wheat, Tomato, Potato, and more).
+- Returns a **per-disease treatment cost estimate** in ₹, which feeds directly into the Loan Gateway.
+- **Automatic model fallback** (`gemini-2.5-flash` → `gemini-2.0-flash` → `gemini-2.5-flash-lite`) with retry, for resilience against transient API overloads.
+- Warns when the uploaded photo doesn't match the selected crop or is unclear.
 
 ### 🏦 3. Loan Gateway
-- Matches farmers to 4 real government schemes: KCC, PMFBY, Agriculture Infrastructure Fund, PM-KISAN
-- Ranked by interest rate, coverage amount, and eligibility
-- Pre-filled application form (personal, land, bank details)
-- Direct link to official government portals
-- Seamlessly receives disease treatment cost from Disease Detection
+- Matches farmers to 4 real government schemes: **KCC, PMFBY, Agriculture Infrastructure Fund, PM-KISAN**.
+- Ranked and filtered by land size and required amount.
+- Pre-filled application form, with direct links to official government portals.
+- Seamlessly receives the treatment cost from Disease Detection.
 
 ### 📊 4. Smart Sell (Market Intelligence)
-- **Live Agmarknet API** integration for real mandi prices across India
-- Nearby mandis shown first based on farmer's GPS location
-- Price trend analysis (rising / falling / stable) with visual indicators
-- Vendor direct marketplace — post crop listing, receive competing bids
-- Vendor buy offers visible to farmers in the same feed
-- Real-time bid notifications via Server-Sent Events (SSE)
-- Mandi average vs vendor bid comparison to help farmers decide
+- **Live Agmarknet API** integration for real mandi prices across India.
+- Nearby mandis surfaced first, based on the farmer's location.
+- Each mandi is tagged **above / around / below the cross-mandi average**, so farmers instantly see which markets pay more than average.
+- Highest-price recommendation to guide where to sell.
+- Vendor direct marketplace — post a crop listing and receive competing bids.
 
-### 🤝 5. Vendor Portal
-- Separate vendor authentication (register/login by phone)
-- Browse all active farmer crop listings with filters (crop, state, quantity, price)
-- Place bids with price, quantity and message
-- Track bid status in real time — accepted / rejected notifications via SSE
-- Post standing "Buy Offers" that farmers can discover and express interest in
-- View interested farmers with their contact details
+### 🤝 5. Vendor Portal + Real-Time Bidding
+- Separate vendor authentication.
+- Browse active farmer listings with filters (crop, state, quantity, price).
+- Place bids with price, quantity, and a message.
+- **Real-time bid updates via Server-Sent Events (SSE)** — new bids appear on the farmer's screen instantly, and accept/reject status updates reach the vendor live, with no refresh.
+- Post standing "Buy Offers" that farmers can discover and respond to.
 
 ### 🌿 6. Farmer Community
-- Instagram-style explore feed of farming posts
-- Upload up to 3 photos per post via **Cloudinary CDN**
-- Post in any of 4 languages — Hindi, Marathi, Kannada, English
-- **On-demand translation** via MyMemory API — cached in MongoDB after first translation
-- Like, comment, reply, share
-- Trending posts (last 7 days by engagement)
-- Trending crop tags for filtering
-- Infinite scroll pagination
-- Comments with nested replies and per-comment translation
+- Instagram-style explore feed of farming posts.
+- Upload up to 3 photos per post via **Cloudinary CDN**.
+- Post in any of 4 languages; **on-demand translation** via MyMemory API (cached in MongoDB after first use).
+- Like, comment, nested replies, trending posts, trending tags, and infinite scroll.
 
 ### 🌐 7. Multilingual Support
-- Full UI in **English, हिंदी (Hindi), मराठी (Marathi), ಕನ್ನಡ (Kannada)**
-- Language persisted in localStorage across sessions
-- All 4 languages implemented via `react-i18next` — zero external API cost
-- Community post translation uses MyMemory free API (1000 calls/day)
+- Full UI in **English, हिंदी (Hindi), मराठी (Marathi), ಕನ್ನಡ (Kannada)** via `react-i18next`.
+- Language persisted in `localStorage` across sessions.
 
-### 🎤 8. Voice Input (Crop Recommendation)
-- Web Speech API integration — fill the crop form by speaking
-- Supports soil type, season, water level, city name and budget in one sentence
-- Text-to-speech readback of crop recommendation results
+### 🔐 8. Secure Authentication
+- Password-based login for **both farmers and vendors**.
+- Passwords hashed with **bcrypt**; never returned to the client.
 
 ---
 
 ## 🛠 Tech Stack
 
 ### Frontend
-| Technology | Purpose |
-|-----------|---------|
-| React 18 | UI framework |
-| Vite | Build tool and dev server |
-| React Router DOM v7 | Client-side routing |
-| react-i18next + i18next | Multilingual support (4 languages) |
-| Axios | HTTP client |
-| Web Speech API | Voice input/output |
-| Cloudinary (unsigned upload) | Community post image hosting |
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| React | 19 | UI framework |
+| Vite | 8 | Build tool and dev server |
+| React Router DOM | 7 | Client-side routing |
+| react-i18next / i18next | 17 / 26 | Multilingual support (4 languages) |
+| Axios | 1.x | HTTP client |
+| Web Speech API | — | Voice input/output |
+| Cloudinary (unsigned upload) | — | Community image hosting |
 
 ### Backend
-| Technology | Purpose |
-|-----------|---------|
-| Node.js + Express.js | REST API server |
-| MongoDB + Mongoose | Database and ODM |
-| Multer | Image upload handling |
-| Axios | External API calls |
-| Server-Sent Events (SSE) | Real-time bid notifications |
-| dotenv | Environment variable management |
+| Technology | Version | Purpose |
+|-----------|---------|---------|
+| Node.js + Express | 5 | REST API server |
+| MongoDB + Mongoose | 9 | Database and ODM |
+| bcryptjs | 3 | Password hashing |
+| Multer | 2 | Image upload handling |
+| Server-Sent Events (SSE) | — | Real-time bid notifications |
+| dotenv | 17 | Environment variable management |
 
 ### ML Service
 | Technology | Purpose |
@@ -151,22 +140,20 @@ FarmPulse solves all four in one platform — free, offline-capable, and availab
 | Python + Flask | ML inference server |
 | Flask-CORS | Cross-origin support |
 | scikit-learn | Random Forest crop model |
-| pandas | Data processing |
+| pandas / NumPy | Data processing |
 | Pillow | Image preprocessing |
-| HuggingFace Inference API | MobileNetV2 disease detection |
+| **google-genai** | Google Gemini Vision (disease detection) |
 | Gunicorn | Production WSGI server |
 
-### External APIs (all free)
-| API | Used For |
-|-----|---------|
-| SoilGrids ISRIC REST | Soil type from GPS coordinates |
-| Open-Meteo | Weather + soil moisture data |
-| OpenStreetMap Nominatim | Reverse geocoding (browser-side) |
-| Open-Meteo Geocoding | City name to coordinates |
-| Agmarknet (data.gov.in) | Live mandi crop prices |
-| HuggingFace Inference | MobileNetV2 plant disease model |
-| MyMemory Translation | Community post translation |
-| Cloudinary | Image storage and CDN |
+### External APIs
+| API | Used For | Key Required |
+|-----|----------|--------------|
+| Google Gemini | Disease detection (vision) | Yes (free tier) |
+| SoilGrids ISRIC | Soil type from GPS | No |
+| Open-Meteo | Weather + rainfall | No |
+| Agmarknet (data.gov.in) | Live mandi prices | Yes (free) |
+| MyMemory Translation | Community post translation | No |
+| Cloudinary | Community image storage/CDN | Cloud name only |
 
 ---
 
@@ -174,74 +161,65 @@ FarmPulse solves all four in one platform — free, offline-capable, and availab
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        BROWSER (React/Vite)                      │
-│  LandingPage → Dashboard → CropRecommend → DiseaseDetect         │
+│                        BROWSER (React 19 / Vite)                 │
+│  Landing → Dashboard → CropRecommend → DiseaseDetect             │
 │  SmartSell → LoanGateway → Community → VendorPortal              │
-└──────────────────┬───────────────────────────┬───────────────────┘
+└──────────────────┬───────────────────────────┬──────────────────┘
                    │ HTTP / SSE                │ Direct upload
                    ▼                           ▼
 ┌──────────────────────────┐     ┌─────────────────────────────┐
-│   Node.js / Express API   │     │     Cloudinary CDN           │
-│   Port 5000               │     │     (community images)       │
+│   Node.js / Express API   │     │      Cloudinary CDN          │
+│   Port 5000               │     │      (community images)      │
 │                           │     └─────────────────────────────┘
-│  /api/farmer              │
+│  /api/farmer  (bcrypt)    │
+│  /api/vendor  (bcrypt)    │
 │  /api/location            │◄──── SoilGrids + Open-Meteo
-│  /api/crop                │◄──── OpenWeatherMap (optional)
+│  /api/crop                │
 │  /api/disease             │
 │  /api/market              │◄──── Agmarknet API
 │  /api/loan                │
-│  /api/vendor              │
 │  /api/bids (SSE)          │
 │  /api/vendor-listings     │
 │  /api/community           │◄──── MyMemory Translation
 └──────────┬───────────────┘
-           │ HTTP (crop/disease)
+           │ HTTP (crop + disease)
            ▼
 ┌──────────────────────────┐     ┌─────────────────────────────┐
-│   Python / Flask ML       │     │     MongoDB Atlas             │
-│   Port 5001               │     │                              │
-│                           │     │  Collections:                │
-│  /predict-crop            │     │  - farmers                   │
-│    RandomForest model     │     │  - vendors                   │
-│    (CSV → pickle)         │     │  - marketlistings            │
-│                           │     │  - vendorbids                │
-│  /detect-disease          │◄─── │  - vendorlistings            │
-│    MobileNetV2 via        │     │  - communitypost             │
-│    HuggingFace API        │     │  - croprecommendations       │
-└──────────────────────────┘     │  - diseasereports            │
-                                  └─────────────────────────────┘
+│   Python / Flask ML       │     │       MongoDB Atlas          │
+│   Port 5001               │     │  farmers · vendors           │
+│                           │     │  marketlistings · vendorbids │
+│  /predict-crop            │     │  vendorlistings              │
+│    RandomForest (sklearn) │     │  communityposts              │
+│                           │     │  croprecommendations         │
+│  /detect-disease          │◄──── Google Gemini Vision API     │
+│    Gemini Vision          │     │  diseasereports              │
+└──────────────────────────┘     └─────────────────────────────┘
 ```
 
 ---
 
-## 🤖 ML Models
+## 🤖 AI & ML
 
 ### Crop Recommendation Model
+- **Algorithm:** Random Forest Classifier (scikit-learn)
+- **Dataset:** Crop Recommendation Dataset (2,200 samples)
+- **Classes:** 22 crops (rice, wheat, maize, chickpea, muskmelon, cotton, mango, banana, grapes, pomegranate, etc.)
+- **Features:** N, P, K, temperature, humidity, pH, rainfall
+- **Accuracy:** ~99% on a 20% held-out split
+- **Note:** Recommendations reflect agronomic suitability from soil and climate features. They do **not** account for regional cropping patterns or local market demand.
 
-- **Algorithm**: Random Forest Classifier
-- **Dataset**: Crop Recommendation Dataset (2,200 samples)
-- **Classes**: 22 crops (rice, wheat, maize, chickpea, muskmelon, cotton, mango, banana, grapes, pomegranate, etc.)
-- **Features**: N, P, K (soil nutrients), temperature, humidity, pH, rainfall
-- **Accuracy**: 99% on 20% test split
-- **Training**: On first run, trains and saves `crop_model.pkl`. Subsequent runs load from pickle.
-- **Soil → NPK mapping**: GPS coordinates → SoilGrids API → sand/silt/clay % → soil type → NPK lookup table
-
-### Disease Detection Model
-
-- **Architecture**: MobileNetV2 (fine-tuned)
-- **Dataset**: PlantVillage (54,306 images)
-- **Classes**: 38 (26 diseases + 12 healthy across 14 crop types)
-- **Crops covered**: Apple, Blueberry, Cherry, Corn, Grape, Orange, Peach, Bell Pepper, Potato, Raspberry, Soybean, Squash, Strawberry, Tomato
-- **Accuracy**: 97% on PlantVillage test set
-- **Inference**: HuggingFace Inference API (`ozair23/mobilenet_v2_1.0_224-finetuned-plantdisease`)
-- **Preprocessing**: Decode base64 → RGB → resize 224×224 → send as bytes
+### Disease Detection (Google Gemini Vision)
+- **Model:** Google Gemini (multimodal vision), with automatic fallback across `gemini-2.5-flash` → `gemini-2.0-flash` → `gemini-2.5-flash-lite`.
+- **Input:** Base64 leaf image + selected crop → normalized to JPEG before inference.
+- **Output (structured JSON):** disease name, health status, confidence, treatment advice, estimated cost (₹), and a mismatch/clarity warning.
+- **Coverage:** Not restricted to a fixed dataset — handles a broad range of crops and diseases.
+- **Note:** The treatment cost is an **AI-generated estimate** for guidance only, not a billed quote.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
 - Node.js v18+
 - Python 3.10+
 - MongoDB (local or Atlas)
@@ -255,42 +233,36 @@ git clone https://github.com/Atharva-026/farmpulse.git
 cd farmpulse
 ```
 
-**2. Install backend dependencies**
+**2. Backend**
 ```bash
 cd backend
 npm install
 ```
 
-**3. Install frontend dependencies**
+**3. Frontend**
 ```bash
 cd ../frontend
 npm install
 ```
 
-**4. Install ML service dependencies**
+**4. ML Service**
 ```bash
 cd ../ml-service
-pip install flask flask-cors pandas scikit-learn requests pillow python-dotenv gunicorn
+pip install flask flask-cors pandas numpy scikit-learn pillow python-dotenv google-genai gunicorn
 ```
 
 **5. Set up environment variables** (see next section)
 
-**6. Run all three services**
-
-Open three terminals:
-
+**6. Run all three services** (three terminals)
 ```bash
 # Terminal 1 — Backend
-cd backend
-node server.js
+cd backend && node server.js
 
 # Terminal 2 — Frontend
-cd frontend
-npm run dev
+cd frontend && npm run dev
 
 # Terminal 3 — ML Service
-cd ml-service
-python app.py
+cd ml-service && python app.py
 ```
 
 Open **http://localhost:5173**
@@ -305,200 +277,69 @@ Open **http://localhost:5173**
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/farmpulse
 
 # Optional (features degrade gracefully without these)
-OPENWEATHER_API_KEY=your_openweathermap_key
 AGMARKNET_API_KEY=your_data_gov_in_key
-HUGGINGFACE_API_KEY=hf_your_key
+OPENWEATHER_API_KEY=your_openweathermap_key
 
 PORT=5000
 ```
 
 ### ML Service — `ml-service/.env`
 ```env
-HUGGINGFACE_API_KEY=hf_your_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### Frontend — `frontend/.env` (production only)
-```env
-VITE_API_URL=https://your-backend.onrender.com/api
-VITE_ML_URL=https://your-ml.railway.app
-VITE_CLOUDINARY_CLOUD=your_cloudinary_cloud_name
-```
-
-### How to get free API keys
-
-| Key | Where to get |
-|-----|-------------|
+### How to get the keys (all free)
+| Key | Where to get it |
+|-----|-----------------|
 | `MONGO_URI` | [cloud.mongodb.com](https://cloud.mongodb.com) → Free M0 cluster → Connect |
-| `OPENWEATHER_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api) → Free tier (1000 calls/day) |
+| `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) → Get API key (no credit card) |
 | `AGMARKNET_API_KEY` | [data.gov.in](https://data.gov.in) → Register → API key |
-| `HUGGINGFACE_API_KEY` | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) → New token (free) |
-| Cloudinary | [cloudinary.com](https://cloudinary.com) → Free plan → Cloud name shown on dashboard |
+| Cloudinary cloud name | [cloudinary.com](https://cloudinary.com) → Free plan → Dashboard |
 
-> **Note**: The app works without `OPENWEATHER_API_KEY` and `AGMARKNET_API_KEY` — it falls back to GPS-based Open-Meteo data and built-in fallback mandi prices respectively.
-
----
-
-## 📁 Project Structure
-
-```
-farmpulse/
-├── README.md
-│
-├── backend/                          # Node.js/Express API
-│   ├── server.js                     # Entry point
-│   ├── package.json
-│   ├── .env                          # Environment variables (not committed)
-│   │
-│   ├── models/
-│   │   ├── Farmer.js                 # Farmer schema
-│   │   ├── Vendor.js                 # Vendor schema
-│   │   ├── CropRecommendation.js     # Crop recommendation history
-│   │   ├── DiseaseReport.js          # Disease detection history
-│   │   ├── MarketListing.js          # Farmer crop listings (with bidCount)
-│   │   ├── VendorBid.js              # Vendor bids on listings
-│   │   ├── VendorListing.js          # Vendor buy offers
-│   │   └── CommunityPost.js          # Community posts + comments
-│   │
-│   └── routes/
-│       ├── farmerRoutes.js           # /api/farmer (register, login)
-│       ├── vendorRoutes.js           # /api/vendor (register, login)
-│       ├── locationRoutes.js         # /api/location/auto-fill (GPS → soil/weather)
-│       ├── cropRoutes.js             # /api/crop/recommend
-│       ├── diseaseRoutes.js          # /api/disease/detect
-│       ├── marketRoutes.js           # /api/market (prices, listings, browse)
-│       ├── bidRoutes.js              # /api/bids (place, accept, reject, SSE stream)
-│       ├── vendorPriceListingRoutes.js # /api/vendor-listings (buy offers)
-│       ├── loanRoutes.js             # /api/loan/match
-│       └── communityRoutes.js        # /api/community (posts, likes, comments, translate)
-│
-├── frontend/                         # React/Vite SPA
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── index.html
-│   │
-│   └── src/
-│       ├── App.jsx                   # Router + auth state
-│       ├── main.jsx                  # Entry point + i18n init
-│       ├── App.css
-│       ├── index.css                 # Design system CSS variables
-│       │
-│       ├── i18n/
-│       │   ├── i18n.js               # i18next configuration
-│       │   ├── en.json               # English translations
-│       │   ├── hi.json               # Hindi translations
-│       │   ├── mr.json               # Marathi translations
-│       │   └── kn.json               # Kannada translations
-│       │
-│       ├── components/
-│       │   ├── Navbar.jsx            # Fixed nav + language switcher
-│       │   └── VoiceButton.jsx       # Mic button component
-│       │
-│       ├── hooks/
-│       │   ├── useVoice.js           # Speech input/output hooks
-│       │   └── useLangCode.js        # Current language code hook
-│       │
-│       └── pages/
-│           ├── LandingPage.jsx       # Public landing + auth modal
-│           ├── Dashboard.jsx         # Farmer home (4 stage cards)
-│           ├── CropRecommend.jsx     # GPS auto-fill + crop recommendation
-│           ├── DiseaseDetect.jsx     # Leaf upload + disease diagnosis
-│           ├── LoanGateway.jsx       # Government loan matching
-│           ├── SmartSell.jsx         # Mandi prices + vendor sell
-│           ├── VendorPortal.jsx      # Vendor dashboard (browse/bids/offers)
-│           ├── Community.jsx         # Farmer community feed
-│           └── About.jsx             # About page
-│
-└── ml-service/                       # Python/Flask ML inference
-    ├── app.py                        # Flask server (crop + disease endpoints)
-    ├── Crop_recommendation.csv       # Training data
-    ├── crop_model.pkl                # Trained model (auto-generated)
-    ├── requirements.txt
-    └── Procfile                      # For Railway/Render deployment
-```
+> **Note:** `.env` files are gitignored and must never be committed. Without `AGMARKNET_API_KEY`, Smart Sell falls back to built-in sample prices for a few crops.
 
 ---
 
 ## 📡 API Reference
 
-### Farmer Routes
+### Farmer / Vendor (password auth)
 ```
-POST   /api/farmer/register     Register new farmer
-POST   /api/farmer/login        Login by phone number
-GET    /api/farmer/:id          Get farmer profile
-```
-
-### Location (GPS Auto-fill)
-```
-POST   /api/location/auto-fill  { lat, lon } → { soilType, waterAvailability, temperature, humidity, rainfall, locationName, state }
+POST   /api/farmer/register     { name, phone, password, ... }
+POST   /api/farmer/login        { phone, password }
+GET    /api/farmer/:id          Get profile (password excluded)
+POST   /api/vendor/register     { name, businessName, phone, password, ... }
+POST   /api/vendor/login        { phone, password }
 ```
 
-### Crop Recommendation
+### Location / Crop / Disease
 ```
-POST   /api/crop/recommend      { soilType, season, waterAvailability, budget, location, farmerId, [lat, lon, temperature, humidity, rainfall] }
-GET    /api/crop/history/:id    Farmer's recommendation history
-```
-
-### Disease Detection
-```
-POST   /api/disease/detect      multipart/form-data: { image, cropName, farmerId }
-GET    /api/disease/history/:id Farmer's detection history
+POST   /api/location/auto-fill  { lat, lon } → soil + weather
+POST   /api/crop/recommend      { soilType, season, ... } → crop + confidence
+POST   /api/disease/detect      multipart { image, cropName } → diagnosis + cost
 ```
 
-### Market
+### Market / Bids
 ```
-GET    /api/market/prices/:crop ?state=Karnataka  Live mandi prices
-POST   /api/market/list                           Post a crop listing
-GET    /api/market/listings                       All active listings (vendor browse)
-GET    /api/market/listings/farmer/:id            Farmer's own listings
-GET    /api/market/browse                         Filtered browse for vendors
-```
-
-### Bids
-```
-POST   /api/bids                       Place a bid
-GET    /api/bids/listing/:id           All bids on a listing
-GET    /api/bids/vendor/:id            Vendor's bids
-PUT    /api/bids/:id/status            Accept or reject bid
-PUT    /api/bids/:id/withdraw          Withdraw a bid
-GET    /api/bids/summary/:id           Pending bid count
-GET    /api/bids/stream/:listingId     SSE stream (real-time updates)
+GET    /api/market/prices/:crop ?state=...   Live mandi prices + above/below-avg tags
+POST   /api/market/list                      Post a crop listing
+GET    /api/market/browse                    Filtered browse for vendors
+POST   /api/bids                             Place a bid
+PUT    /api/bids/:id/status                  Accept / reject a bid
+GET    /api/bids/stream/:listingId           SSE stream (real-time updates)
 ```
 
-### Vendor
+### Loan / Community
 ```
-POST   /api/vendor/register            Register vendor
-POST   /api/vendor/login               Login by phone
-GET    /api/vendor-listings            Vendor buy offers by crop
-POST   /api/vendor-listings            Post a buy offer
-GET    /api/vendor-listings/vendor/:id Vendor's own offers
-POST   /api/vendor-listings/:id/interest  Express interest (farmer)
-PUT    /api/vendor-listings/:id/close  Close a buy offer
-GET    /api/vendor-listings/stream/:id SSE stream for vendor notifications
-```
-
-### Loan
-```
-POST   /api/loan/match           { estimatedCost, landSize, farmerId } → matched schemes
-GET    /api/loan/schemes         All available schemes
-```
-
-### Community
-```
-GET    /api/community            Feed (paginated) ?page=1&category=disease&sort=trending
-GET    /api/community/trending   Top 10 posts last 7 days
-GET    /api/community/tags       Trending crop tags
-GET    /api/community/:id        Single post with comments
-POST   /api/community            Create post { authorId, authorName, caption, language, images[], tags[], category }
-PUT    /api/community/:id/like   Toggle like { farmerId }
-POST   /api/community/:id/comment  Add comment { authorId, authorName, text, language, parentId }
-POST   /api/community/:id/translate  Translate caption { toLang }
-DELETE /api/community/:id        Delete own post { farmerId }
+POST   /api/loan/match          { estimatedCost, landSize } → matched schemes
+GET    /api/community           Paginated feed
+POST   /api/community           Create post
+POST   /api/community/:id/translate   Translate caption { toLang }
 ```
 
 ### ML Service (Port 5001)
 ```
-POST   /predict-crop      { soilType, temperature, humidity, rainfall } → { recommendedCrop, confidence, expectedYield, expectedProfit }
-POST   /detect-disease    { image (base64), cropName } → { diseaseName, confidence, treatment, estimatedCost, isHealthy }
+POST   /predict-crop      { soilType, temperature, humidity, rainfall } → crop
+POST   /detect-disease    { image (base64), cropName } → disease + treatment + cost
 GET    /health            Service health check
 ```
 
@@ -506,57 +347,48 @@ GET    /health            Service health check
 
 ## 🚀 Deployment
 
-The stack deploys entirely for free:
+**Target platform: Microsoft Azure App Service** (Platform-as-a-Service), using the **Azure for Students** tier — no credit card required, verified via institutional email.
 
-| Service | Platform | Free Tier |
-|---------|----------|-----------|
-| Frontend (React/Vite) | [Vercel](https://vercel.com) | Unlimited |
-| Backend (Node/Express) | [Render](https://render.com) | 750 hrs/month |
-| ML Service (Flask) | [Railway](https://railway.app) | $5 credit/month |
-| Database (MongoDB) | [MongoDB Atlas](https://cloud.mongodb.com) | 512MB forever |
-| Images (Community) | [Cloudinary](https://cloudinary.com) | 25GB/month |
+| Service | Platform |
+|---------|----------|
+| Frontend (React build) | Served by the Node backend as static files |
+| Backend (Node/Express) | Azure App Service |
+| ML Service (Flask) | Azure App Service |
+| Database | MongoDB Atlas (free M0) |
+| Community images | Cloudinary |
 
-### Quick Deploy Steps
-
-1. **MongoDB Atlas** → Create free M0 cluster → Get connection string
-2. **Render** → Connect GitHub → Set root to `backend` → Add env vars → Deploy
-3. **Railway** → Connect GitHub → Set root to `ml-service` → Add `HUGGINGFACE_API_KEY` → Deploy
-4. **Vercel** → Connect GitHub → Set root to `frontend` → Add `VITE_API_URL` pointing to Render URL → Deploy
-
-Full step-by-step deployment guide in [DEPLOYMENT.md](./DEPLOYMENT.md)
+> Deployment configuration (startup commands, environment variables, and Atlas network access) is documented separately in the deployment guide.
 
 ---
 
 ## 🌐 Languages Supported
 
 | Language | Code | Coverage |
-|----------|------|---------|
-| English | `en` | 100% — all pages |
-| हिंदी (Hindi) | `hi` | 100% — all pages |
-| मराठी (Marathi) | `mr` | 100% — all pages |
-| ಕನ್ನಡ (Kannada) | `kn` | 100% — all pages |
+|----------|------|----------|
+| English | `en` | 100% |
+| हिंदी (Hindi) | `hi` | 100% |
+| मराठी (Marathi) | `mr` | 100% |
+| ಕನ್ನಡ (Kannada) | `kn` | 100% |
 
-Language is auto-persisted to `localStorage`. Community posts can be written in any language and translated on demand to any other with a single tap.
+Community posts can be written in any language and translated on demand to any other with a single tap.
 
 ---
 
 ## 🐛 Known Limitations
 
-- **Disease detection covers 14 crops only** (PlantVillage dataset limitation) — Mango, Wheat, Rice, Sugarcane are not supported
-- **Soybean has healthy images only** in the training set — disease detection unreliable for soybean
-- **Render free tier sleeps** after 15 minutes of inactivity — first request takes ~30 seconds to wake up
-- **MyMemory translation API** has a limit of 1000 free requests/day — suitable for small communities
-- **Agmarknet API** data availability varies by day and crop — fallback data is shown when live data is unavailable
+- **Disease cost is an AI estimate** — a guidance figure from Gemini, not an official or billed price.
+- **Crop recommendation** is based on soil and climate features only; it does not factor in regional cropping habits or market demand.
+- **Gemini free tier** is rate-limited and can occasionally return transient overload errors (mitigated by automatic model fallback).
+- **Agmarknet data** availability varies by day and crop; sample fallback data is shown when live data is unavailable.
+- **MyMemory translation API** allows ~1000 free requests/day — suitable for small communities.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome. Please follow these steps:
-
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
@@ -564,26 +396,24 @@ Contributions are welcome. Please follow these steps:
 
 ## 📜 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE` for details.
 
 ---
 
 ## 🙏 Acknowledgements
 
-- [PlantVillage Dataset](https://plantvillage.psu.edu/) — disease detection training data
-- [SoilGrids by ISRIC](https://soilgrids.org/) — global soil data API
+- [Google Gemini](https://ai.google.dev/) — disease detection (vision)
+- [SoilGrids by ISRIC](https://soilgrids.org/) — global soil data
 - [Open-Meteo](https://open-meteo.com/) — free weather API
-- [Agmarknet](https://agmarknet.gov.in/) via [data.gov.in](https://data.gov.in) — Indian mandi price data
-- [HuggingFace](https://huggingface.co/) — ML model hosting
+- [Agmarknet](https://agmarknet.gov.in/) via [data.gov.in](https://data.gov.in) — mandi price data
 - [MyMemory](https://mymemory.translated.net/) — free translation API
-- [PM-KISAN](https://pmkisan.gov.in/), [KCC](https://www.pmkisan.gov.in), [PMFBY](https://pmfby.gov.in) — government scheme data
+- [Cloudinary](https://cloudinary.com/) — image storage and CDN
+- PM-KISAN, KCC, PMFBY — government scheme data
 
 ---
 
 <div align="center">
 
 **Built with ❤️ for Indian Farmers**
-
-*Powered by Agmarknet · PlantVillage · PM-KISAN · Open-Meteo · SoilGrids*
 
 </div>

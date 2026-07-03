@@ -11,8 +11,9 @@ const C = {
   text:'#1a1a1a', sub:'#555', muted:'#888', border:'#E0E0E0',
 };
 
-const trendColor = t=>({rising:C.mid,falling:C.red,stable:C.amber}[t]||C.amber);
-const trendIcon  = t=>({rising:'▲',falling:'▼',stable:'●'}[t]||'●');
+const trendColor = t=>({above:C.mid,below:C.red,around:C.amber}[t]||C.amber);
+const trendIcon  = t=>({above:'▲',below:'▼',around:'●'}[t]||'●');
+const trendLabel = t=>({above:'above avg',below:'below avg',around:'around avg'}[t]||'');
 
 const baseInp = {
   display:'block',width:'100%',padding:'10px 13px',marginTop:'5px',marginBottom:'13px',
@@ -99,8 +100,8 @@ function MandiTab(){
             {[
               {label:'Avg Price',value:`₹${result.avgPrice}`},
               {label:'Price Spread',value:`₹${result.priceVariation}`},
-              {label:'Rising',value:result.risingCount,color:C.mid},
-              {label:'Falling',value:result.fallingCount,color:C.red},
+              {label:'Above avg',value:result.aboveAvgCount,color:C.mid},
+              {label:'Below avg',value:result.belowAvgCount,color:C.red},
             ].map((s,i)=>(
               <div key={i} style={{background:C.pale,borderRadius:'10px',padding:'12px',textAlign:'center'}}>
                 <p style={{margin:0,fontSize:'18px',fontWeight:'700',color:s.color||C.text}}>{s.value}</p>
@@ -135,7 +136,7 @@ function MandiTab(){
                     </div>
                     <div style={{textAlign:'right'}}>
                       <p style={{margin:0,fontSize:'21px',fontWeight:'700',color:C.text}}>₹{m.price}</p>
-                      <p style={{margin:0,fontSize:'12px',color:trendColor(m.trend)}}>{trendIcon(m.trend)} {m.trend}</p>
+                      <p style={{margin:0,fontSize:'12px',color:trendColor(m.trend)}}>{trendIcon(m.trend)} {trendLabel(m.trend)}</p>
                     </div>
                   </div>
                 </div>
