@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSpeechInput, useSpeechOutput } from '../hooks/useVoice';
 import VoiceButton from '../components/VoiceButton';
 import useLangCode from '../hooks/useLangCode';
+import { API_BASE } from '../config';
 
 const SOIL_COLORS = {
   sandy: { bg: '#FFF8E1', border: '#F9A825', text: '#F57F17', icon: '🏖️' },
@@ -100,7 +101,7 @@ export default function CropRecommend() {
         } catch (e) { console.log('Geocode failed'); }
 
         try {
-          const res = await axios.post('http://localhost:5000/api/location/auto-fill', { lat: latitude, lon: longitude });
+          const res = await axios.post(`${API_BASE}/location/auto-fill`, { lat: latitude, lon: longitude });
           if (res.data.success) {
             const d = { ...res.data, locationName, state: stateName };
             setLocationData(d);
@@ -131,7 +132,7 @@ export default function CropRecommend() {
       const place = geoRes.data.results?.[0];
       if (!place) { setLocationStatus('error'); setLocationError(`City "${manualCity}" not found.`); return; }
       const { latitude, longitude, name, admin1 } = place;
-      const res = await axios.post('http://localhost:5000/api/location/auto-fill', { lat: latitude, lon: longitude });
+      const res = await axios.post(`${API_BASE}/location/auto-fill`, { lat: latitude, lon: longitude });
       if (res.data.success) {
         const d = { ...res.data, locationName: name, state: admin1 || '' };
         setLocationData(d);
@@ -155,7 +156,7 @@ export default function CropRecommend() {
         payload.humidity    = locationData.humidity;
         payload.rainfall    = locationData.rainfall;
       }
-      const res = await axios.post('http://localhost:5000/api/crop/recommend', payload);
+      const res = await axios.post(`${API_BASE}/crop/recommend`, payload);
       setResult(res.data);
     } catch (err) { setError('Something went wrong. Please try again.'); }
     setLoading(false);

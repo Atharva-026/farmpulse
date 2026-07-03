@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
-const API = 'http://localhost:5000/api';
+import { API_BASE as API } from '../config';
 const CLOUDINARY_CLOUD = 'dgkgg96de';
 const CLOUDINARY_PRESET = 'farmpulse_community'; // unsigned upload preset you create in Cloudinary dashboard
 

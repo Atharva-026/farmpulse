@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { API_BASE } from '../config';
 
 export default function LoanGateway() {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ export default function LoanGateway() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setLoading(true); setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/loan/match', { ...form, farmerId:'6650f1c2e1b2c3d4e5f67890' });
+      const res = await axios.post(`${API_BASE}/loan/match`, { ...form, farmerId:'6650f1c2e1b2c3d4e5f67890' });
       setResult(res.data);
     } catch (err) { setError(t('loan.errors.fetchFail')); }
     setLoading(false);

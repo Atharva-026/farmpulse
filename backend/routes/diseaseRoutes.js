@@ -5,6 +5,8 @@ const multer = require('multer');
 const fs = require('fs');
 const DiseaseReport = require('../models/DiseaseReport');
 
+const ML_URL = process.env.ML_URL || 'http://localhost:5001';
+
 const upload = multer({ dest: 'uploads/' });
 
 router.post('/detect', upload.single('image'), async (req, res) => {
@@ -18,7 +20,7 @@ router.post('/detect', upload.single('image'), async (req, res) => {
 
     console.log('Disease Step 2 - Calling Flask...');
 
-    const mlRes = await axios.post('http://localhost:5001/detect-disease', {
+    const mlRes = await axios.post(`${ML_URL}/detect-disease`, {
       image: imageBase64,
       cropName
     });

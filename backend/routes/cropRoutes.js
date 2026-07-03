@@ -3,6 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 const CropRecommendation = require('../models/CropRecommendation');
 
+const ML_URL = process.env.ML_URL || 'http://localhost:5001';
+
 router.post('/recommend', async (req, res) => {
   try {
     const { farmerId, soilType, season, waterAvailability, budget, location } = req.body;
@@ -32,7 +34,7 @@ router.post('/recommend', async (req, res) => {
     }
 
     console.log('Step 3 - Calling Flask...');
-    const mlRes = await axios.post('http://localhost:5001/predict-crop', {
+    const mlRes = await axios.post(`${ML_URL}/predict-crop`, {
       soilType, temperature, humidity, rainfall
     });
 

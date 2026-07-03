@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { useSpeechOutput } from '../hooks/useVoice';
 import useLangCode from '../hooks/useLangCode';
+import { API_BASE } from '../config';
 
 const SUPPORTED_CROPS = [
   'Apple', 'Banana', 'Bell Pepper', 'Cabbage', 'Chili', 'Corn',
@@ -66,7 +67,7 @@ export default function DiseaseDetect() {
       formData.append('farmerId', '6650f1c2e1b2c3d4e5f67890');
 
       const res = await axios.post(
-        'http://localhost:5000/api/disease/detect',
+        `${API_BASE}/disease/detect`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

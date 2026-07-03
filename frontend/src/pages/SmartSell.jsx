@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const API = 'http://localhost:5000/api';
+import { API_BASE as API } from '../config';
 
 const C = {
   green:'#1B5E20', mid:'#2E7D32', light:'#E8F5E9', pale:'#F1F8E9',
